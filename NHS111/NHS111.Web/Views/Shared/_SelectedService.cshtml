@@ -1,0 +1,7 @@
+﻿@model NHS111.Models.Models.Web.FromExternalServices.DosService
+
+<div class="service-name">@WebUtility.HtmlDecode(Model.Name)</div>
+<div class="service-address">
+    @WebUtility.HtmlDecode(Model.Address)
+</div>
+@Html.HiddenFor(m => m.Id)

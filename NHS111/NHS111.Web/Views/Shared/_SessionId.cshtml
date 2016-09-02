@@ -1,0 +1,10 @@
+﻿@model NHS111.Models.Models.Web.JourneyViewModel
+
+@Html.HiddenFor(m => m.SessionId)
+
+<script>
+    $(document).ready(function () {
+        var $sessionId = $("#SessionId");
+        $sessionId.val($.cookie("sessionId"));
+    });
+</script>

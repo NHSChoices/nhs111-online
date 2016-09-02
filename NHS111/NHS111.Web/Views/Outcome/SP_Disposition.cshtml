@@ -1,0 +1,44 @@
+﻿@using NHS111.Models.Models.Web
+@model OutcomeViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutNhsUk.cshtml";
+}
+
+@section Title {
+
+}
+
+@section Scripts {
+    <script>
+        var pageId = '@Model.Id';
+        dataLayer = [
+        {
+            'virtualPageUrl': document.location.pathname + '/' + pageId,
+            'virtualPageTitle': '@Model.TitleWithoutBullets'
+        }];
+    </script>
+}
+
+@section OuterSection {
+}
+
+@section FeedbackSection {
+    
+}
+
+<link href="~/content/css_NhsUk/disposition.css" media="screen" rel="stylesheet" type="text/css"/>
+
+@Html.Partial("_SessionId", Model)
+
+<h2>This is a test service and you’ve reached the end of the questions.</h2>
+<p>
+    <strong>If you need medical advice visit <a href="http://www.nhs.uk">www.nhs.uk</a> or call 111</strong>
+</p>
+
+<div class="disposition-panel">
+    <p class="disposition-title">
+        If this was a real service, we would ask you to enter your postcode next. Then we could look up the most appropriate NHS service for you to visit.
+    </p>
+
+    @Html.Partial("_AlphaFeedback", new FeedbackViewModel() { PageId = Model.Id })
+</div>

@@ -1,0 +1,128 @@
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using Moq;
+using NHS111.Domain.Api.Controllers;
+using NHS111.Domain.Repository;
+using NHS111.Models.Models.Domain;
+using NUnit.Framework;
+
+namespace NHS111.Domain.Test.API_Project.Controller
+{
+
+    [TestFixture]
+    public class QuestionController_Test
+    {
+        Mock<IQuestionRepository> _questionRepository;
+        private QuestionController _sut;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _questionRepository = new Mock<IQuestionRepository>();
+            _sut = new QuestionController(_questionRepository.Object);
+        }
+
+        [Test]
+        public async void should_return_a_question_by_id()
+        {
+            //Arrange
+
+            var id = "questionid";
+            _questionRepository.Setup(x => x.GetQuestion(id)).Returns(Task.FromResult(new QuestionWithAnswers()));
+
+            //Act
+            var result = await _sut.GetQuestion(id);
+
+            //Assert
+            _questionRepository.Verify(x => x.GetQuestion(id), Times.Once);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        }
+
+        [Test]
+        public async void should_return_answers_related_to_a_specific_question()
+        {
+            //Arrange
+
+            IEnumerable<Answer> answerList = new List<Answer>();
+
+            var id = "qId1";
+            _questionRepository.Setup(x => x.GetAnswersForQuestion(id)).Returns(Task.FromResult(answerList));
+
+
+            //Act
+            var result = await _sut.GetAnswersForQuestion(id);
+
+            //Assert
+            _questionRepository.Verify(x => x.GetAnswersForQuestion(id), Times.Once);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        }
+
+        [Test]
+        public async void should_return_next_question()
+        {
+            //Arrange
+
+            QuestionWithAnswers questionWithAnswers = new QuestionWithAnswers();
+
+            var answer = "answer";
+            var id = "qId1";
+            _questionRepository.Setup(x => x.GetNextQuestion(id, answer)).Returns(Task.FromResult(questionWithAnswers));
+
+
+            //Act
+            var result = await _sut.GetNextQuestion(id, answer);
+
+            //Assert
+            _questionRepository.Verify(x => x.GetNextQuestion(id, answer), Times.Once);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        }
+
+        [Test]
+        public async void should_return_first_just_be_safe_question()
+        {
+            //Arrange
+
+            IEnumerable<QuestionWithAnswers> questionWithAnswersList = new List<QuestionWithAnswers>();
+
+            var pathwayId = "qId1";
+            var justToBeSafePart = "1";
+
+            _questionRepository.Setup(x => x.GetJustToBeSafeQuestions(pathwayId, justToBeSafePart)).Returns(Task.FromResult(questionWithAnswersList));
+
+
+            //Act
+            var result = await _sut.GetJustToBeSafeQuestionsFirst(pathwayId);
+
+            //Assert
+            _questionRepository.Verify(x => x.GetJustToBeSafeQuestions(pathwayId, justToBeSafePart), Times.Once);
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        }
+
+
+        [Test]
+        public async void should_return_next_just_to_be_safe_question()
+        {
+            //Arrange
+            var pathwayId = "PW755";
+            IEnumerable<QuestionWithAnswers> questionWithAnswersList = new List<QuestionWithAnswers>();//{ new QuestionWithAnswers() { Question = new Question(){}, Answers= new List<Answer>(){new Answer()}, Labels = new List<string>(){"label1","label2"}}};
+            var answeredQuestionIds = "Q1,Q2";
+            var multipleChoice = false;
+            var selectedQuestionId = "A1";
+
+            _questionRepository.Setup(x => x.GetJustToBeSafeQuestions(pathwayId, answeredQuestionIds, multipleChoice, selectedQuestionId)).ReturnsAsync(questionWithAnswersList);
+
+
+            //Act
+            var result = await _sut.GetJustToBeSafeQuestionsNext(pathwayId, selectedQuestionId, multipleChoice, answeredQuestionIds);
+
+            //Assert
+            Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        }
+    }
+}

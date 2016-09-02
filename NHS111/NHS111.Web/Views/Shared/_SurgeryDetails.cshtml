@@ -1,0 +1,27 @@
+﻿@model NHS111.Models.Models.Web.FromExternalServices.DosService[]
+
+@if (Model != null)
+{
+    <ul>
+        @foreach (var checkCapacitySummaryResult in Model.ToList())
+        {
+            <li class="surgery-item">
+                <h3>@Html.Raw(checkCapacitySummaryResult.Name)</h3>
+                <div>
+                    <p>@Html.Raw(checkCapacitySummaryResult.Address)</p>
+                    @if (checkCapacitySummaryResult.ContactDetails != null && !checkCapacitySummaryResult.ContactDetails.IsEmpty())
+                    {
+                        <p>@Html.Raw(checkCapacitySummaryResult.ContactDetails)</p>
+                    }
+                    @if (checkCapacitySummaryResult.Url != null && !checkCapacitySummaryResult.Url.IsEmpty())
+                    {
+                        <p>
+                            <a href="http://@Html.Raw(checkCapacitySummaryResult.Url)" target="_blank">@Html.Raw(checkCapacitySummaryResult.Url)</a>
+                        </p>
+                    }
+                </div>
+            </li>
+        }
+
+    </ul>
+}

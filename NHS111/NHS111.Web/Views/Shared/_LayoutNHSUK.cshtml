@@ -1,0 +1,108 @@
+﻿@using System.Configuration
+@using NHS111.Web.Presentation.Analytics
+@inherits NHS111.Web.Views.Shared.LayoutView
+
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>@RenderSection("Title")</title>
+
+    <!-- css -->
+    <link href="http://nhsalpha.herokuapp.com/public/stylesheets/govuk-template.css?0.12.0" media="screen" rel="stylesheet" type="text/css" />
+    <link href="~/Content/css_NhsUK/application.css" media="screen" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 9]>
+        <link href="/Content/css_NhsUK/application-ie8.css" media="screen" rel="stylesheet" type="text/css" />
+    <![endif]-->
+
+    <!-- Javascript -->
+    <script src="~/scripts/vendor/modernizr-custom.js"></script>
+    <!--[if lt IE 9]>
+     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <![endif]-->
+
+        <script src="~/scripts/jquery2.1.1.min.js"></script>
+
+        <script src="~/Scripts/jquery1.11.2-ui.min.js"></script>
+    <script src="~/scripts/bootstrap.min.js"></script>
+    <script src="~/scripts/jquery.cookie.js"></script>
+
+    <script>
+        $(function () {
+            var sessionId = $.cookie("sessionId");
+            if (!sessionId) $.cookie("sessionId", '@Guid.NewGuid()', { path: '/' });
+        });
+    </script>
+    @RenderSection("Scripts", false)
+</head>
+<body class="">
+    @if (CookieBannerFeature.IsEnabled)
+    {
+        <!-- toggle cookie banner -->
+        @Html.Partial("_CookieBanner")
+    }
+
+
+    @{
+        var data = new Dictionary<string, string> { { "ContainerID", ConfigurationManager.AppSettings["GoogleAnalyticsContainerId"] } };
+
+        var tagPrinter = new GoogleTagManagerPrinter(data);
+    }
+
+    @tagPrinter.Print()
+
+    <script type="text/javascript">document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+    <div id="skiplink-container">
+        <div>
+            <a href="#content" class="skiplink">Skip to main content</a>
+        </div>
+    </div>
+    <header role="banner" id="global-header">
+        <div class="header-container">
+            <a href="/" class="header-logo" title="Go to the NHS.UK homepage">
+                <img src="/content/images/nhs-rev-logotype.jpg" alt="">
+
+            </a>
+            <div class="header-title">
+                111 Online <strong class="phase-tag alpha"></strong>
+            </div>
+        </div>
+    </header>
+    @if (DisclaimerBannerFeature.IsEnabled && !(ViewBag.DoNotRenderDiscalimerBanner != null && ViewBag.DoNotRenderDiscalimerBanner))
+    {
+            <!-- toggle disclaimer banner-->
+        @Html.Partial("_DisclaimerBanner")
+    }
+    @RenderSection("HeaderContent", false)
+    <!--end header-->
+
+
+    <section class="outer-section">@RenderSection("OuterSection", false)</section>
+
+    <main id="content" role="main">
+        @RenderBody()
+    </main>
+    <section class="feedback-section">@RenderSection("FeedbackSection", false)</section>
+    <footer id="footer" role="contentinfo">
+        <div class="footer-wrapper">
+            <nav>
+                <ul>
+                    <li>@Html.ActionLink("Cookies", "Cookies", "Help", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Privacy statement", "Privacy", "Help", null, new { target = "_blank" })</li>
+                </ul>
+            </nav>
+            <div class="text">
+                <p>
+                    <small>
+                        &copy; Crown copyright<br>
+                    </small>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="global-app-error" class="app-error hidden"></div>
+</body>
+</html>

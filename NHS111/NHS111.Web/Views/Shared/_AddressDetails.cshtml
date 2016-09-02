@@ -1,0 +1,85 @@
+﻿@model NHS111.Models.Models.Web.OutcomeViewModel
+
+<div id="AddressDetails">
+
+    <div id="ManualEntryHome" class="row">
+        <div class="row small">
+            <label>
+                <span>House Number</span>
+                @Html.TextBoxFor(x => x.UserInfo.HomeAddress.HouseNumber, new { @placeholder = "House number", @Value = "12" })
+            </label>
+        </div>
+        <div class="row">
+            <label>
+                <span>Address Line 1</span>
+                @Html.TextBoxFor(x => x.UserInfo.HomeAddress.AddressLine1, new { @placeholder = "Address line 1", @Value = "Flat 1" })
+            </label>
+        </div>
+        <div class="row">
+            <label>
+                <span>Address Line 2</span>
+                @Html.TextBoxFor(x => x.UserInfo.HomeAddress.AddressLine2, new { @placeholder = "Address line 2", @Value = "Piccadilly Circus" })
+            </label>
+        </div>
+        <div class="row medium">
+            <label>
+                <span>City</span>
+                @Html.TextBoxFor(x => x.UserInfo.HomeAddress.City, new { @placeholder = "City", @Value = "London" })
+            </label>
+        </div>
+        <div class="row medium">
+            <label>
+                <span>County</span>
+                @Html.TextBoxFor(x => x.UserInfo.HomeAddress.County, new { @placeholder = "County", @Value = "London" })
+            </label>
+        </div>
+        <div class="row medium">
+            <label>
+                <span>Postcode</span>
+                @Html.TextBoxFor(x => x.UserInfo.HomeAddress.PostCode, new { @placeholder = "Postcode", @Value = "EC1A 4JQ" })
+            </label>
+        </div>
+    </div>
+
+    @Html.Partial("_AreYouAtHome")
+
+    <div id="AdditionalInfo" class="row">
+        <div class="row small">
+            <label>
+                <span>House Number</span>
+                @Html.TextBoxFor(x => x.UserInfo.CurrentAddress.HouseNumber, new { @placeholder = "House number", @Value = "44" })
+            </label>
+        </div>
+        <div class="row">
+            <label>
+                <span>Address Line 1</span>
+                @Html.TextBoxFor(x => x.UserInfo.CurrentAddress.AddressLine1, new { @placeholder = "Address line 1", @Value = "Flat 3" })
+            </label>
+        </div>
+        <div class="row">
+            <label>
+                <span>Address Line 2</span>
+                @Html.TextBoxFor(x => x.UserInfo.CurrentAddress.AddressLine2, new { @placeholder = "Address line 2", @Value = "Oxford Circus" })
+            </label>
+        </div>
+        <div class="row medium">
+            <label>
+                <span>City</span>
+                @Html.TextBoxFor(x => x.UserInfo.CurrentAddress.City, new { @placeholder = "City", @Value = "London" })
+            </label>
+        </div>
+        <div class="row medium">
+            <label>
+                <span>County</span>
+                @Html.TextBoxFor(x => x.UserInfo.CurrentAddress.County, new { @placeholder = "County", @Value = "London" })
+            </label>
+        </div>
+        <div class="row medium">
+            <label>
+                <span>Postcode</span>
+                @Html.TextBoxFor(x => x.UserInfo.CurrentAddress.PostCode, new { @placeholder = "Postcode", @Value = "EC1A 4JQ" })
+            </label>
+        </div>
+    </div>
+
+</div>

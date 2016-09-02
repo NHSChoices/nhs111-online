@@ -1,0 +1,85 @@
+﻿@model NHS111.Models.Models.Web.FeedbackViewModel
+@{ Model.DateAdded = DateTime.Now; }
+<!--[if lte IE 8]>
+    <style>
+        .feedback-container {
+            color: black;
+        }
+         
+    </style>
+<![endif]-->
+
+<div class="feedback-wrapper">
+    <div class="feedback-container feedback-container--open">
+        <div class="feedback-banner">
+            <a href="#FeedbackForm" class="feedback-dismiss"></a>
+            <form id="FeedbackForm" action="@Url.Action("SubmitFeedback", "Feedback")">
+                <div id="FeedbackDetails">
+                    <h3 class="feedback-message feedback-title">
+                        Help us improve NHS 111 Online
+                    </h3>
+                    <p class="feedback-message">
+                        If you’d like to give your views on helping us improve NHS 111 Online, please use the form below.
+                    </p>
+                    <div class="feedback-form">
+                        @Html.TextAreaFor(m => m.Text, new { @placeholder = "Feedback", @Value = "", @class = "feedback-input", @maxlength = "8000" })
+                        <a class="feedback-btn feedback-submit" id="btnFeedback" onclick="SubmitFeedback(this);">Submit</a>
+                    </div>
+                </div>
+                @Html.HiddenFor(m => m.SessionId)
+                @Html.HiddenFor(m => m.PageId)
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+
+    $('.feedback-dismiss').click(function () {
+        $('.feedback-wrapper').slideToggle();
+    });
+
+    $('.feedback-input').focus(function () {
+        $(this).animate({
+            //width: "70%",
+           // height: "70%"
+        });
+    });
+
+    $(document).ready(function () {
+        var $sessionId = $("#FeedbackForm #SessionId");
+        $sessionId.val($.cookie("sessionId"));
+    });
+
+    $("#Text").keypress(function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        var RETURNKEY = 13;
+        if (keycode === RETURNKEY) {
+            $("#btnFeedback").click();
+            return false;
+        }
+    });
+
+    function SubmitFeedback(btnClicked) {
+        if ($("#Text").val() !== "") {
+            var $form = $(btnClicked).parents("form");
+            $form[0][0].value = $('<div/>').text($form[0][0].value).html();
+            var detailsDiv = $("#FeedbackDetails");
+            $(detailsDiv).slideToggle(600);
+            $.ajax({
+                type: "POST",
+                url: $form.attr("action"),
+                data: $form.serialize(),
+                error: function (xhr, status, error) {
+                    alert(error);
+                    $(detailsDiv).slideToggle(600);
+                    //do something about the error
+                },
+                success: function (response) {
+                    $(detailsDiv).html('<p>' + response.Message + '</p>');
+                    $(detailsDiv).slideToggle(600);
+                }
+            });
+            return false;
+        }
+    }
+</script>

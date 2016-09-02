@@ -1,0 +1,45 @@
+﻿@model NHS111.Models.Models.Web.OutcomeViewModel
+
+@Html.HiddenFor(x => Model.Id)
+@Html.HiddenFor(x => Model.JourneyJson)
+@Html.HiddenFor(x => Model.PathwayId)
+@Html.HiddenFor(x => Model.PathwayNo)
+@Html.HiddenFor(x => Model.PathwayTitle)
+@Html.HiddenFor(x => Model.SymptomGroup)
+@Html.HiddenFor(x => Model.UserInfo.Age)
+@Html.HiddenFor(x => Model.UserInfo.Gender)
+@Html.HiddenFor(x => Model.SymptomDiscriminator)
+@Html.HiddenFor(x => Model.Title)
+@Html.HiddenFor(x => Model.UserInfo.CurrentAddress.PostCode)
+@Html.HiddenFor(x => Model.SessionId)
+@Html.HiddenFor(x => Model.StateJson)
+@Html.HiddenFor(x => Model.PreviousStateJson)
+@Html.HiddenFor(x => x.TimeFrameText)
+@if (Model.DosCheckCapacitySummaryResult.Success != null)
+{
+    for (var i = 0; i < Model.DosCheckCapacitySummaryResult.Success.Services.Count(); ++i)
+    {
+        @Html.HiddenFor(m => Model.DosCheckCapacitySummaryResult.Success.Services[i].Id)
+        @Html.Hidden(string.Format("DosCheckCapacitySummaryResult.Success.Services[{0}].Name", i), @WebUtility.HtmlDecode(Model.DosCheckCapacitySummaryResult.Success.Services[i].Name))
+        @Html.Hidden(string.Format("DosCheckCapacitySummaryResult.Success.Services[{0}].Address", i), @WebUtility.HtmlDecode(Model.DosCheckCapacitySummaryResult.Success.Services[i].Address))
+        @Html.HiddenFor(m => Model.DosCheckCapacitySummaryResult.Success.Services[i].OdsCode)
+        @Html.HiddenFor(m => Model.DosCheckCapacitySummaryResult.Success.Services[i].PostCode)
+    }
+}
+@Html.HiddenFor(m => m.SurgeryViewModel.SelectedSurgery)
+
+@for (int i = 0; i < Model.CollectedKeywords.Keywords.Count; i++)
+{
+    @Html.HiddenFor(model => Model.CollectedKeywords.Keywords[i].Value)
+    @Html.HiddenFor(model => Model.CollectedKeywords.Keywords[i].IsFromAnswer)
+}
+
+    @for (int i = 0; i < Model.CollectedKeywords.ExcludeKeywords.Count; i++)
+    {
+        @Html.HiddenFor(model => Model.CollectedKeywords.ExcludeKeywords[i].Value)
+        @Html.HiddenFor(model => Model.CollectedKeywords.ExcludeKeywords[i].IsFromAnswer)
+    }
+
+
+
+

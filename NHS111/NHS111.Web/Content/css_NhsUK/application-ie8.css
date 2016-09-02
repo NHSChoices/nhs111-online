@@ -1,0 +1,16 @@
+﻿.button, INPUT[type=submit].previous-question {
+    width: auto;
+    padding: 10px 15px;
+}
+
+.input-age {
+    margin-top: 10px;
+}
+
+.module-zero > .heading-med {
+    margin-bottom: 10px;
+}
+
+.closeDisclaimer {
+    margin-top: 10px;
+}

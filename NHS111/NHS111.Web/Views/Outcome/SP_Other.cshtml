@@ -1,0 +1,73 @@
+﻿@using NHS111.Models.Models.Web
+@using NHS111.Utils.DispositionLogics
+@inherits NHS111.Web.Views.Shared.SurveyLinkView<OutcomeViewModel>
+@{
+    Layout = "~/Views/Shared/_LayoutNhsUK.cshtml";
+}
+@section Title { Outcome }
+
+
+<link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/Content/css_NhsUK/a-and-e.css")" media="screen" rel="stylesheet" type="text/css" />
+
+@Html.Partial("_OutcomeHeader", Model, new ViewDataDictionary() { { "OutcomeHeader", string.Format("From your answers, we recommend you {0}", Model.Title) } })
+
+@section HeadTop {
+@{ var url = string.Format("/outcome/{0}/{1}/{2}/disposition/", Url.Encode(Model.PathwayNo), Url.Encode(Model.OutcomeGroup.Text), Url.Encode(Model.Id)); }
+    <script>
+        var pageId = '@Model.Id';
+        dataLayer = [
+        {
+            'virtualPageUrl': '@url',
+            'virtualPageTitle': '@Model.TitleWithoutBullets'
+        }];
+    </script>
+}
+@section SurveyBanner{
+    @Html.Partial("_SurveyLink", Model.SurveyLink)
+}
+@section FeedbackSection {
+    @if (!SurveyLinkFeature.IsEnabled)
+    {
+        @Html.Partial("_FeedbackDetails", new FeedbackViewModel() { UserId = Model.SessionId.ToString(), PageId = Model.Id });
+    }
+    else
+    {
+        @Html.Partial("_SurveyLink", Model.SurveyLink)
+    }
+}
+
+@if (Grouping.Two.Contains(Model.Id))
+{
+    using (Html.BeginForm("ServiceDetails", "Outcome", FormMethod.Post))
+    {
+        @Html.HiddenFor(x => Model.Id)
+        @Html.HiddenFor(x => Model.JourneyJson)
+        @Html.HiddenFor(x => Model.PathwayId)
+        @Html.HiddenFor(x => Model.PathwayNo)
+        @Html.HiddenFor(x => Model.SymptomGroup)
+        @Html.HiddenFor(x => Model.UserInfo.Demography.Age)
+        @Html.HiddenFor(x => Model.UserInfo.Demography.Gender)
+        @Html.HiddenFor(x => Model.SymptomDiscriminatorCode)
+        @Html.HiddenFor(x => Model.Title)
+
+        <h2>Would you like us to find a healthcare provider near you?</h2>
+        <label>
+            Postcode of current address
+        </label>
+        <div class="inline-details">
+            @Html.TextBoxFor(m => m.UserInfo.CurrentAddress.Postcode, new { @class = "form-control form-control-8-chars", placeholder = "eg. SE1" })
+            <input type="submit" class="button button-next" value="Find" />
+        </div>
+    }
+    <div class="row">
+        <a class="button button-next button-link" href="#">I don't know my postcode</a>
+    </div>
+}
+
+@using (Html.BeginForm("Navigation", "Question", FormMethod.Post))
+{
+    @Html.Partial("_CommonHiddenFieldsOutcomeViewModel", Model)
+    <div class="row">
+        <input class="button button-next button-link" type="submit" name="PreviousQuestion" value="Change my previous answer" />
+    </div>
+} 

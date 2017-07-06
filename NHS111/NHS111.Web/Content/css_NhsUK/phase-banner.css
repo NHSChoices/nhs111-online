@@ -1,22 +1,12 @@
 ﻿#phase-banner {
-    padding-top: 25px;
+    margin-top: 2px;
+    background-color: #E31D1A;
 }
 #phase-banner .phase-container {
     max-width: 75%;
     margin: 0 15px;
     padding: 0;
 }
-#content #phase-banner .phase-container {
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-#content #phase-banner {
-    margin-bottom: 25px;
-    padding: 0;
-}
-
 @media (min-width: 641px) {
     #phase-banner .phase-container {
         margin: 0 auto;
@@ -33,9 +23,14 @@
     border-bottom: 1px solid #bfc1c3;
 }
 .phase-banner--inner {
-    padding: 20px;
+    max-width: 325px;
+    padding: 5px;
     color: #fff;
-    background-color: #E31D1A;
+}
+@media (min-width: 925px) {
+    .phase-banner--inner {
+        max-width: 925px;
+    }
 }
 .phase-banner--inner a {
     color: #fff;

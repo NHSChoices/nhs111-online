@@ -1,26 +1,18 @@
-﻿using NHS111.Models.Models.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NHS111.Web.Presentation.Models
+﻿namespace NHS111.Models.Models.Web.DosRequests
 {
     public class DosCase
     {
         public DosCase()
         {
             AgeFormat = AgeFormatType.Years;
-            Surgery = "UKN";
             NumberPerType = 2;
-            SearchDistance = 60;
+            SearchDistance = 32;
         }
 
         public string CaseRef { get; set; }
         public string CaseId { get; set; }
-        public string PostCode { get; set; }
-        public string Surgery  { get; set; }
+        public virtual string PostCode { get; set; }
+        public string Surgery { get { return "UNK"; } }
         public string Age { get; set; }
         public AgeFormatType AgeFormat { get; set; }
         public int Disposition { get; set; }

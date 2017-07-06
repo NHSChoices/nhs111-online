@@ -8,6 +8,11 @@
 .input-symptoms {
     float: left;
     margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+hr {
+    clear: both;
 }
 
 input.linkButton { 
@@ -15,8 +20,8 @@ input.linkButton {
      border: none;
      color: #0066ff;
      text-decoration: underline;
-     cursor: pointer; 
-
+     cursor: pointer;
+    padding: 0;
 }
 
 a.linkButton { 
@@ -25,17 +30,84 @@ a.linkButton {
      color: #0066ff;
      text-decoration: underline;
      cursor: pointer; 
-     margin-left: 0.5rem;
 }
 
+span.linkButton { 
+     background: none;
+     border: none;
+     color: #0066ff;
+     text-decoration: underline;
+     cursor: pointer; 
+}
+    .symptoms-find-container p {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        line-height: 1.4em;
+    }
+    .symptoms-find-header h2 {
+        margin: 30px 0;
+    }
+
+.common-symptoms {
+    background-color: #e4f1f9;
+    float: right;
+    width: 100%;
+}
+
+.common-symptoms ul{
+      padding: 20px 0 20px 30px;
+}
+.common-symptoms h3 {
+    padding: 20px 20px 0px 30px;
+    font-size: 1.6em;
+}
+    
+
+@media (min-width: 961px) {
+    .common-symptoms {
+        width: 35%;
+    }
+    .symptoms-find-container {
+        width: 60%;
+        margin-right: 45px;
+    }
+     .symptoms-find-header h2 {
+        width:60%
+    }
+         .form-control, .ui-autocomplete-input {
+        width: 75%; 
+    }
+}
+@media (max-width: 1200px) {
+    .symptoms-find-container {
+        margin-right: 20px;
+    }
+}
+@media (max-width: 960px) {
+     .common-symptoms {
+       margin-top: 10px;
+       margin-bottom: 40px;
+    }
+     .common-symptoms ul{
+      padding: 20px 0 20px 20px;
+    }
+    .common-symptoms h3 {
+        padding: 20px 20px 0px 20px;
+}
+    .all-symptoms ul {
+        float: none;
+    }
+}
+
+
 ul.list-conditions {
-    margin-left: 1em;
-    list-style-type: disc;
+    list-style-type: none;
+
 }
 
 ul.list-conditions, ol.list-conditions {
-    line-height: 3rem;
-    font-size: 1.2em;
+    line-height: 2rem;
+    font-size: 1em;
 }
 
 .progress-panel ol li {
@@ -205,7 +277,7 @@ ol li:last-child.arrow_box:before, ol li:last-child.arrow_box:after, .progress-p
 }
 
 .module-zero button.button {
-    width: 292px;
+    width: 330px;
 }
 
 .module-zero .list-conditions li {
@@ -219,7 +291,7 @@ ol li:last-child.arrow_box:before, ol li:last-child.arrow_box:after, .progress-p
 
 .module-zero .list-conditions li a span {
     text-decoration: underline;
-    color: #0077CC; ;
+    color: #0077CC;
 }
 
 .feeling-unwell {
@@ -235,5 +307,144 @@ ol li:last-child.arrow_box:before, ol li:last-child.arrow_box:after, .progress-p
      background: url(/content/img/banner/get-help-white.png) no-repeat left top;
 }
 
+div.symptoms-search {
+    margin-top: 20px;
+}
 
+.all-symptoms {
+    clear: both;
+}
+.all-symptoms h3 {
+    padding-bottom: 23px;
+}
+/*
 
+.all-symptoms ul {
+    float: left;
+}
+
+.all-symptoms ul ul {
+    padding-left: 10px;
+    border-left: 3px lightgrey solid;
+    margin-left: 25px;
+}
+*/
+.all-symptoms div {
+    display: inline-block;
+}
+.all-symptoms div.left {
+    float: left;
+    padding-right: 50px;
+    padding-bottom: 50px;
+}
+
+/*@media (min-width: 780px) {
+    .all-symptoms div.right {
+        padding-left: 50px;
+    }
+}
+@media (max-width: 730px) {
+    .all-symptoms div.right {
+        padding-top: 50px;
+    }
+}*/
+
+@media (max-width: 640px) {
+    hr {
+        display: none;
+    }
+}
+
+h4, h5 {
+    line-height: 3rem;
+    color: #0066ff;
+    font-size: 1em;
+}
+
+.top-level-category {
+    
+}
+
+.sub-category {
+    
+}
+
+.pathway {
+    
+}
+
+.content {
+    padding-left: 10px;
+    border-left: 3px lightgrey solid;
+    margin-left: 25px;
+}
+.children {
+    margin-left: 25px;
+}
+/*
+.all-symptoms input {
+    font-size: 1em;
+    padding: 0 10px;
+
+}
+
+@media (max-width: 960px) {
+    .all-symptoms ul {
+        float: none;
+    }
+}*/
+
+span.category {
+    text-decoration: none;
+}
+span.underline {
+    text-decoration: underline;
+}
+
+.search-box h1 {
+    margin: 30px 0;
+}
+
+#searchButton {
+    padding: 0 37px 0 20px;
+}
+
+em {
+    font-style: normal;
+    font-weight: bolder;
+}
+
+#SearchResults li {
+    margin: 5px 0 25px 0;
+}
+
+button {
+    background: none;
+    border: none;
+    color: #0066ff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0;
+    text-align: left;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+p.additional-topics {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0072C6;
+
+}
+
+h3 {
+    font-size: 25px;
+}
+
+#show-categories {
+    font-size: 25px;
+    font-weight: 600;
+}

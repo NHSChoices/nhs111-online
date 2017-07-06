@@ -1,0 +1,69 @@
+﻿@using NHS111.Models.Models.Web
+@inherits NHS111.Web.Views.Shared.SurveyLinkView<OutcomeViewModel>
+@{ Layout = "~/Views/Shared/_LayoutNhsUk.cshtml"; }
+
+<link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/content/css_NhsUk/question.css")" media="screen" rel="stylesheet" type="text/css" />
+
+@section Title {NHS 111 Online - @Model.TitleWithoutBullets}
+@section SurveyBanner{
+    @Html.Partial("_SurveyLink", Model.SurveyLink)
+}
+@section FeedbackSection {
+    @if (!SurveyLinkFeature.IsEnabled)
+    {
+        @Html.Partial("_FeedbackDetails", new FeedbackViewModel() {UserId = Model.SessionId.ToString(), PageId = Model.Id})
+        ;
+    }
+    else
+    {
+        @Html.Partial("_SurveyLink", Model.SurveyLink)
+    }
+}
+
+@using (Html.BeginForm("Navigation", "Question", FormMethod.Post))
+{
+    @Html.HiddenFor(x => Model.SessionId)
+    @Html.HiddenFor(x => Model.Id)
+    @Html.HiddenFor(x => Model.JourneyJson)
+    @Html.HiddenFor(x => Model.PathwayId)
+    @Html.HiddenFor(x => Model.PathwayNo)
+    @Html.HiddenFor(x => Model.PathwayTitle)
+    @Html.HiddenFor(x => Model.DigitalTitle)
+    @Html.HiddenFor(x => Model.UserInfo.Demography.Age)
+    @Html.HiddenFor(x => Model.UserInfo.Demography.Gender)
+    @Html.HiddenFor(x => Model.Title)
+    @Html.HiddenFor(x => Model.SymptomDiscriminatorCode)
+    @Html.HiddenFor(x => Model.QuestionNo)
+    @Html.HiddenFor(x => Model.StateJson)
+    @Html.HiddenFor(x => Model.FilterServices)
+
+    <h1 class="question-header dead-end-jump">@Model.TitleWithoutBullets</h1>
+    <p>Your health assessment can’t be completed with the current online service.</p>
+    <p>Please call 111 now for help and advice. Calls to NHS 111 are free.</p>
+    <hr />
+    if (!Model.IsFirstStep)
+    {
+        <input class="button previous-question" id="previousScreen" type="submit" name="PreviousQuestion" value="Previous question" />
+    }
+}
+<script type="text/javascript">
+
+
+    $(document).ready(function() {
+
+        //enable disable submit button
+        $("#nextScreen[type=submit]").attr('disabled', 'disabled');
+
+        $("form label").click(function() {
+            $("button[type=submit]").removeAttr('disabled');
+        });
+
+        $("form input[type=radio]").click(function() {
+            $("button[type=submit]").removeAttr('disabled');
+        });
+
+
+    });
+
+
+</script>

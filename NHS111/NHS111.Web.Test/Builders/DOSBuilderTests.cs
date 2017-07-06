@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
 using Moq;
+using NHS111.Features;
 using NHS111.Models.Models.Domain;
+using NHS111.Models.Models.Web.DosRequests;
 using NHS111.Utils.Cache;
 using NHS111.Utils.Helpers;
 using NHS111.Utils.Notifier;
@@ -29,6 +31,7 @@ namespace NHS111.Web.Presentation.Builders.Tests
         private Mock<INotifier<string>> _mockNotifier;
         private DOSBuilder _dosBuilder;
         private Mock<ISurgeryBuilder> _mockSurgeryBuilder;
+        private Mock<IITKMessagingFeature> _mockItkMessagingFeature;
 
         private string _mockPathwayURL = "PW755";
 
@@ -43,6 +46,7 @@ namespace NHS111.Web.Presentation.Builders.Tests
             _mockConfiguration = new Mock<Configuration.IConfiguration>();
             _mockCacheManager = new Mock<ICacheManager<string, string>>();
             _mockNotifier = new Mock<INotifier<string>>();
+            _mockItkMessagingFeature = new Mock<IITKMessagingFeature>();
 
             SetupMockFillCareAdviceBuilder();
 
@@ -52,15 +56,15 @@ namespace NHS111.Web.Presentation.Builders.Tests
                 _mockRestfulHelper.Object, 
                 _mockConfiguration.Object, 
                 _mappingEngine.Object, _mockCacheManager.Object,
-                _mockNotifier.Object);
+                _mockNotifier.Object,
+                _mockItkMessagingFeature.Object);
         }
 
         private void SetupMockConfiguration()
         {
-            _mockConfiguration.SetupGet(c => c.DosUsername).Returns("TestUsername");
-            _mockConfiguration.SetupGet(c => c.DosPassword).Returns("TestPassword");
             _expectedBusinessApiPathwaySymptomGroupUrl = "http://Test.ApiPathwaySymptomGroupUrl.com/" + _mockPathwayURL;
             _mockConfiguration.Setup(c => c.GetBusinessApiPathwaySymptomGroupUrl(_mockPathwayURL)).Returns(_expectedBusinessApiPathwaySymptomGroupUrl);
+            _mockConfiguration.Setup(c => c.DOSWhitelist).Returns("Service 1|Service 2");
         }
 
         private void SetupMockFillCareAdviceBuilder()
@@ -77,30 +81,10 @@ namespace NHS111.Web.Presentation.Builders.Tests
                         It.IsAny<List<string>>())).ReturnsAsync(mockCareAdvices);
         }
 
-     
-
-        [Test()]
-        public async void BuildCheckCapacitySummaryRequest_Creates_SymptomGroup_Test()
-        {
-            var expectedSymptomGroup = "12345";
-            var journeyJson = "{'steps':[" +
-                              "{'answer':{'title':'No','titleWithoutSpaces':'No','symptomDiscriminator':'','supportingInfo':'','keywords':'','order':3},'questionTitle':'Test q 1?','questionNo':'Tx1506','questionId':'" + _mockPathwayURL + ".0','jtbs':false}," +
-                              "{'answer':{'title':'No','titleWithoutSpaces':'No','symptomDiscriminator':'','supportingInfo':'','keywords':'','order':3},'questionTitle':'Test q 2?','questionNo':'Tx220054','questionId':'" + _mockPathwayURL + ".100','jtbs':false}" +
-                              "]}";
-
-            MockRestfulHelperWithExpectedUrl(expectedSymptomGroup);
-
-            var symptomGroup = await _dosBuilder.BuildSymptomGroup(journeyJson);
-
-             Assert.AreEqual(int.Parse(expectedSymptomGroup), symptomGroup);
-
-
-        }
-
         [Test]
         public async void FillCheckCapacitySummaryResult_WithDistanceInMetric_ConvertsToMiles() {
             var fakeResponse = new HttpResponseMessage(HttpStatusCode.OK) {
-                Content = new StringContent("{ CheckCapacitySummaryResult: [{}] }")
+                Content = new StringContent("{CheckCapacitySummaryResult: [{}]}")
             };
             _mockRestfulHelper.Setup(r => r.PostAsync(It.IsAny<string>(), It.IsAny<HttpRequestMessage>()))
                 .Returns(Task<HttpResponseMessage>.Factory.StartNew(() => fakeResponse));
@@ -110,23 +94,23 @@ namespace NHS111.Web.Presentation.Builders.Tests
                 SearchDistance = 1,
                 DosCheckCapacitySummaryResult = new DosCheckCapacitySummaryResult()
                 {
-                    Success = new SuccessObject<DosService>()
+                    Success = new SuccessObject<ServiceViewModel>()
                     {
-                        Services = new List<DosService>()
+                        Services = new List<ServiceViewModel>()
                     }
                 } 
             };
-            await _dosBuilder.FillCheckCapacitySummaryResult(model);
+            await _dosBuilder.FillCheckCapacitySummaryResult(model, true);
 
             _mockRestfulHelper.Verify(r => r.PostAsync(It.IsAny<string>(), It.Is<HttpRequestMessage>(h => AssertIsMetric(h, model.SearchDistance))));
         }
 
         private bool AssertIsMetric(HttpRequestMessage request, int original) {
             var content = request.Content.ReadAsStringAsync().Result;
-            var payload = JsonConvert.DeserializeObject<DosCheckCapacitySummaryRequest>(content);
+            var payload = JsonConvert.DeserializeObject<DosCase>(content);
 
             const float MILES_PER_KM = 1.609344f;
-            return payload.Case.SearchDistance == (int)Math.Ceiling(original / MILES_PER_KM);
+            return payload.SearchDistance == (int)Math.Ceiling(original / MILES_PER_KM);
         }
 
         private void MockRestfulHelperWithExpectedUrl(string expectedSymptomGroup)

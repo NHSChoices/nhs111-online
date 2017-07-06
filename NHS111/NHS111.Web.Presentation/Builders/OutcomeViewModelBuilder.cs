@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
-using System.Net.Configuration;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,10 +12,11 @@ using NHS111.Models.Models.Domain;
 using NHS111.Models.Models.Web;
 using NHS111.Models.Models.Web.FromExternalServices;
 using NHS111.Models.Models.Web.ITK;
-using NHS111.Utils.Cache;
+using NHS111.Models.Models.Web.Logging;
+using NHS111.Utils.Filters;
 using NHS111.Utils.Helpers;
-using NHS111.Utils.Itk;
 using NHS111.Utils.Logging;
+using NHS111.Web.Presentation.Logging;
 using IConfiguration = NHS111.Web.Presentation.Configuration.IConfiguration;
 
 namespace NHS111.Web.Presentation.Builders
@@ -27,49 +28,107 @@ namespace NHS111.Web.Presentation.Builders
         private readonly IRestfulHelper _restfulHelper;
         private readonly IConfiguration _configuration;
         private readonly IMappingEngine _mappingEngine;
-        private readonly ICacheManager<string, string> _cacheManager;
         private readonly IKeywordCollector _keywordCollector;
-        private readonly IAddressViewModelBuilder _addressViewModelBuilder;
+        private readonly IJourneyHistoryWrangler _journeyHistoryWrangler;
+        private readonly ISurveyLinkViewModelBuilder _surveyLinkViewModelBuilder;
+        private readonly IAuditLogger _auditLogger;
 
-        public OutcomeViewModelBuilder(ICareAdviceBuilder careAdviceBuilder, IRestfulHelper restfulHelper, IConfiguration configuration, IMappingEngine mappingEngine, ICacheManager<string, string> cacheManager, IKeywordCollector keywordCollector,
-            IAddressViewModelBuilder addressViewModelBuilder)
+
+        public OutcomeViewModelBuilder(ICareAdviceBuilder careAdviceBuilder, IRestfulHelper restfulHelper, IConfiguration configuration, IMappingEngine mappingEngine, IKeywordCollector keywordCollector,
+            IJourneyHistoryWrangler journeyHistoryWrangler, ISurveyLinkViewModelBuilder surveyLinkViewModelBuilder, IAuditLogger auditLogger)
         {
             _careAdviceBuilder = careAdviceBuilder;
             _restfulHelper = restfulHelper;
             _configuration = configuration;
             _mappingEngine = mappingEngine;
-            _cacheManager = cacheManager;
             _keywordCollector = keywordCollector;
-            _addressViewModelBuilder = addressViewModelBuilder;
+            _journeyHistoryWrangler = journeyHistoryWrangler;
+            _surveyLinkViewModelBuilder = surveyLinkViewModelBuilder;
+            _auditLogger = auditLogger;
         }
 
-        public async Task<List<AddressInfo>> SearchPostcodeBuilder(string input)
+        public async Task<List<AddressInfoViewModel>> SearchPostcodeBuilder(string input)
         {
             input = HttpUtility.UrlDecode(input);
             var listPaf = JsonConvert.DeserializeObject<List<PAF>>(await _restfulHelper.GetAsync(string.Format(_configuration.PostcodeSearchByIdApiUrl, input)));
-            return _mappingEngine.Mapper.Map<List<AddressInfo>>(listPaf);
+            return _mappingEngine.Mapper.Map<List<AddressInfoViewModel>>(listPaf);
         }
 
         public async Task<OutcomeViewModel> DispositionBuilder(OutcomeViewModel model)
         {
+            model.DispositionTime = DateTime.Now;
+
             if (OutcomeGroup.Call999.Equals(model.OutcomeGroup))
             {
-                model.AddressSearchViewModel = _addressViewModelBuilder.Build(model);
                 model.CareAdviceMarkers = model.State.Keys.Where(key => key.StartsWith("Cx"));
             }
 
-            model.WorseningCareAdvice = await _careAdviceBuilder.FillWorseningCareAdvice(model.UserInfo.Age,
-                model.UserInfo.Gender);
+            if (!String.IsNullOrEmpty(model.SymptomDiscriminatorCode))
+            {
+                model.SymptomDiscriminator = await GetSymptomDiscriminator(model.SymptomDiscriminatorCode);
+            }
+
+            var pathways = _journeyHistoryWrangler.GetPathwayNumbers(model.Journey.Steps);
+
+            if (pathways.Length > 0)
+            {
+                model.SymptomGroup = await GetSymptomGroup(pathways);
+            }
+
+            if (OutcomeGroup.ClinicianCallBack.Equals(model.OutcomeGroup))
+            {
+                //hard code SD and SG codes to fix DOS for Yorkshire region
+                //TODO: Fix this in DOS and remove this hack
+
+                model.SymptomDiscriminatorCode = "4193";
+                model.SymptomGroup = "1206";
+            }
+
+            model.WorseningCareAdvice = await _careAdviceBuilder.FillWorseningCareAdvice(model.UserInfo.Demography.Age,
+                model.UserInfo.Demography.Gender);
             model.CareAdvices = await
-                    _careAdviceBuilder.FillCareAdviceBuilder(model.Id, new AgeCategory(model.UserInfo.Age).Value, model.UserInfo.Gender,
+                    _careAdviceBuilder.FillCareAdviceBuilder(model.Id, new AgeCategory(model.UserInfo.Demography.Age).Value, model.UserInfo.Demography.Gender,
                         _keywordCollector.ConsolidateKeywords(model.CollectedKeywords).ToList());
+
+            model.SurveyLink = await _surveyLinkViewModelBuilder.SurveyLinkBuilder(model);
             return model;
+        }
+
+        private async Task<SymptomDiscriminator> GetSymptomDiscriminator(string symptomDiscriminatorCode)
+        {
+
+            var symptomDiscriminatorResponse = await
+                _restfulHelper.GetResponseAsync(
+                    string.Format(_configuration.GetBusinessApiSymptomDiscriminatorUrl(symptomDiscriminatorCode)));
+            if (!symptomDiscriminatorResponse.IsSuccessStatusCode)
+                throw new Exception(string.Format("A problem occured getting the symptom discriminator at {0}. {1}",
+                    _configuration.GetBusinessApiSymptomDiscriminatorUrl(symptomDiscriminatorCode),
+                    await symptomDiscriminatorResponse.Content.ReadAsStringAsync()));
+
+            return 
+                JsonConvert.DeserializeObject<SymptomDiscriminator>(await symptomDiscriminatorResponse.Content.ReadAsStringAsync());
+        }
+
+        private async Task<string> GetSymptomGroup(string pathways)
+        {
+            RestfulHelper restfulHelper = new RestfulHelper();
+
+            var symptomGroupResponse = await
+                restfulHelper.GetResponseAsync(string.Format(_configuration.GetBusinessApiPathwaySymptomGroupUrl(pathways)));
+            if (!symptomGroupResponse.IsSuccessStatusCode)
+                throw new Exception(string.Format("A problem occured getting the symptom group for {0}.", pathways));
+
+            return
+                await symptomGroupResponse.Content.ReadAsStringAsync();
         }
 
         public async Task<OutcomeViewModel> ItkResponseBuilder(OutcomeViewModel model)
         {
             var itkRequestData = CreateItkDispatchRequest(model);
+            await _auditLogger.LogItkRequest(model, itkRequestData);
             var response = await SendItkMessage(itkRequestData);
+            await _auditLogger.LogItkResponse(model, response);
+            model.ItkDuplicate = response.StatusCode == System.Net.HttpStatusCode.Conflict;
             if (response.IsSuccessStatusCode)
             {
                 model.ItkSendSuccess = true;
@@ -81,13 +140,20 @@ namespace NHS111.Web.Presentation.Builders
                 Log4Net.Error("Error sending ITK message : Status Code -" + response.StatusCode.ToString() +
                               " Content -" + response.Content.ReadAsStringAsync());
             }
-            model.CareAdvices =
-                await
-                    _careAdviceBuilder.FillCareAdviceBuilder(model.Id, new AgeCategory(model.UserInfo.Age).Value, model.UserInfo.Gender,
-                        _keywordCollector.ConsolidateKeywords(model.CollectedKeywords).ToList());
+            return model;
+        }
 
-            model.WorseningCareAdvice =
-                await _careAdviceBuilder.FillWorseningCareAdvice(model.UserInfo.Age, model.UserInfo.Gender);
+        public async Task<OutcomeViewModel> DeadEndJumpBuilder(OutcomeViewModel model)
+        {
+            model.DispositionTime = DateTime.Now;
+            model.SurveyLink = await _surveyLinkViewModelBuilder.SurveyLinkBuilder(model);
+            return model;
+        }
+
+        public async Task<OutcomeViewModel> PathwaySelectionJumpBuilder(OutcomeViewModel model)
+        {
+            model.DispositionTime = DateTime.Now;
+            model.SurveyLink = await _surveyLinkViewModelBuilder.SurveyLinkBuilder(model);
             return model;
         }
 
@@ -101,45 +167,32 @@ namespace NHS111.Web.Presentation.Builders
             return response;
         }
 
-        private ITKDispatchRequest CreateItkDispatchRequest(OutcomeViewModel model)
+        private Authentication getItkAuthentication()
         {
-            var auth = new Authentication() {UserName = "admn", Password = "admnUat"};
-            var itkRequestData = _mappingEngine.Mapper.Map<OutcomeViewModel, ITKDispatchRequest>(model);
-            itkRequestData.Authentication = auth;
-            return itkRequestData;
+            return new Authentication { UserName = ConfigurationManager.AppSettings["itk_credential_user"], Password = ConfigurationManager.AppSettings["itk_credential_password"] };
         }
 
-        public async Task<OutcomeViewModel> PostCodeSearchBuilder(OutcomeViewModel model)
+        private ITKDispatchRequest CreateItkDispatchRequest(OutcomeViewModel model)
         {
-            var addresses = await SearchPostcodeBuilder(model.AddressSearchViewModel.PostCode);
-            model.AddressSearchViewModel.AddressInfoList = addresses;
-            model.AddressSearchViewModel.PostcodeApiAddress = _configuration.PostcodeSearchByIdApiUrl;
-            model.AddressSearchViewModel.PostcodeApiSubscriptionKey = _configuration.PostcodeSubscriptionKey;
-            return model;
+            var itkRequestData = _mappingEngine.Mapper.Map<OutcomeViewModel, ITKDispatchRequest>(model);
+            itkRequestData.Authentication = getItkAuthentication();
+            return itkRequestData;
         }
 
         public async Task<OutcomeViewModel> PersonalDetailsBuilder(OutcomeViewModel model)
         {
-            if (!string.IsNullOrEmpty(model.AddressSearchViewModel.PostCode))
-            {
-                return await PostCodeSearchBuilder(model);
-            }
-
-            model.AddressSearchViewModel.PostcodeApiAddress = _configuration.PostcodeSearchByIdApiUrl;
-            model.AddressSearchViewModel.PostcodeApiSubscriptionKey = _configuration.PostcodeSubscriptionKey;
-
-            model.CareAdvices = await _careAdviceBuilder.FillCareAdviceBuilder(model.UserInfo.Age, model.UserInfo.Gender, model.CareAdviceMarkers.ToList());
+            model.CareAdvices = await _careAdviceBuilder.FillCareAdviceBuilder(model.UserInfo.Demography.Age, model.UserInfo.Demography.Gender, model.CareAdviceMarkers.ToList());
             return model;
         }
-
     }
 
     public interface IOutcomeViewModelBuilder
     {
-        Task<List<AddressInfo>> SearchPostcodeBuilder(string input);
+        Task<List<AddressInfoViewModel>> SearchPostcodeBuilder(string input);
         Task<OutcomeViewModel> DispositionBuilder(OutcomeViewModel model);
-        Task<OutcomeViewModel> PostCodeSearchBuilder(OutcomeViewModel model);
         Task<OutcomeViewModel> PersonalDetailsBuilder(OutcomeViewModel model);
         Task<OutcomeViewModel> ItkResponseBuilder(OutcomeViewModel model);
+        Task<OutcomeViewModel> DeadEndJumpBuilder(OutcomeViewModel model);
+        Task<OutcomeViewModel> PathwaySelectionJumpBuilder(OutcomeViewModel model);
     }
 }

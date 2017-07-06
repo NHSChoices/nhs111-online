@@ -1,41 +1,59 @@
 ﻿@using System.Configuration
+@using System.Reflection
 @using NHS111.Web.Presentation.Analytics
 @inherits NHS111.Web.Views.Shared.LayoutView
 
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    @RenderSection("HeadTop", false)
+    
+    @{
+        var data = new Dictionary<string, string> {{"ContainerID", ConfigurationManager.AppSettings["GoogleAnalyticsContainerId"]}};
+
+        var tagPrinter = new GoogleTagManagerPrinter(data);
+    }
+
+    @tagPrinter.Print()
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>@RenderSection("Title")</title>
 
     <!-- css -->
-    <link href="http://nhsalpha.herokuapp.com/public/stylesheets/govuk-template.css?0.12.0" media="screen" rel="stylesheet" type="text/css" />
-    <link href="~/Content/css_NhsUK/application.css" media="screen" rel="stylesheet" type="text/css" />
-    <!--[if lt IE 9]>
-        <link href="/Content/css_NhsUK/application-ie8.css" media="screen" rel="stylesheet" type="text/css" />
-    <![endif]-->
+    <link href="~/Content/css_NhsUK/govuk-template.css?0.12.0" media="all" rel="stylesheet" type="text/css"/>
+    <link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/Content/css_NhsUK/application.css")" media="all" rel="stylesheet" type="text/css" />
 
     <!-- Javascript -->
+    @if (UserZoomSurveyFeature.IsEnabled)
+    {
+        <script>
+            (function (w) { w.uztracker = w.uztracker || function () { console.warn && console.warn('The uztracker() is not available.'); }; })(window);
+        </script>
+    }
+    
     <script src="~/scripts/vendor/modernizr-custom.js"></script>
     <!--[if lt IE 9]>
-     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <![endif]-->
 
-        <script src="~/scripts/jquery2.1.1.min.js"></script>
+    <script src="~/scripts/jquery2.1.1.min.js"></script>
 
-        <script src="~/Scripts/jquery1.11.2-ui.min.js"></script>
+    <script src="~/Scripts/jquery1.11.2-ui.min.js"></script>
     <script src="~/scripts/bootstrap.min.js"></script>
     <script src="~/scripts/jquery.cookie.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.1/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.ns-autogrow/1.1.6/jquery.ns-autogrow.min.js"></script>
 
-    <script>
-        $(function () {
-            var sessionId = $.cookie("sessionId");
-            if (!sessionId) $.cookie("sessionId", '@Guid.NewGuid()', { path: '/' });
-        });
-    </script>
+    @if (UserZoomSurveyFeature.IsEnabled)
+    {
+        <script type="text/javascript" charset="utf-8" src="https://cdn3.userzoom.com/uz.js?cuid=AE08A9785B32E2119DA70022196C4538"></script>
+    }
+
     @RenderSection("Scripts", false)
+
 </head>
 <body class="">
     @if (CookieBannerFeature.IsEnabled)
@@ -44,16 +62,11 @@
         @Html.Partial("_CookieBanner")
     }
 
+    @RenderSection("SurveyBanner", false)
 
-    @{
-        var data = new Dictionary<string, string> { { "ContainerID", ConfigurationManager.AppSettings["GoogleAnalyticsContainerId"] } };
+    @tagPrinter.PrintNoScript()
 
-        var tagPrinter = new GoogleTagManagerPrinter(data);
-    }
-
-    @tagPrinter.Print()
-
-    <script type="text/javascript">document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+    <script type="text/javascript"> document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled'); </script>
     <div id="skiplink-container">
         <div>
             <a href="#content" class="skiplink">Skip to main content</a>
@@ -61,18 +74,18 @@
     </div>
     <header role="banner" id="global-header">
         <div class="header-container">
-            <a href="/" class="header-logo" title="Go to the NHS.UK homepage">
-                <img src="/content/images/nhs-rev-logotype.jpg" alt="">
+            <a href="/" class="header-logo" title="Go to the NHS 111 homepage">
+                <img src="/content/images/nhs-rev-logotype.jpg" alt="NHS logo"/>
 
             </a>
             <div class="header-title">
-                111 Online <strong class="phase-tag alpha"></strong>
+                111 <strong class="phase-tag beta"></strong>
             </div>
         </div>
     </header>
-    @if (DisclaimerBannerFeature.IsEnabled && !(ViewBag.DoNotRenderDiscalimerBanner != null && ViewBag.DoNotRenderDiscalimerBanner))
+    @if (DisclaimerBannerFeature.IsEnabled)
     {
-            <!-- toggle disclaimer banner-->
+        <!-- toggle disclaimer banner-->
         @Html.Partial("_DisclaimerBanner")
     }
     @RenderSection("HeaderContent", false)
@@ -89,20 +102,38 @@
         <div class="footer-wrapper">
             <nav>
                 <ul>
-                    <li>@Html.ActionLink("Cookies", "Cookies", "Help", null, new { target = "_blank" })</li>
-                    <li>@Html.ActionLink("Privacy statement", "Privacy", "Help", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Terms and conditions", "Terms", "Help", null, new {target = "_blank"})</li>
+                    <li>@Html.ActionLink("Privacy statement", "Privacy", "Help", null, new {target = "_blank"})</li>
+                    <li>@Html.ActionLink("Cookies", "Cookies", "Help", null, new {target = "_blank"})</li>
                 </ul>
             </nav>
-            <div class="text">
-                <p>
-                    <small>
-                        &copy; Crown copyright<br>
-                    </small>
-                </p>
-            </div>
         </div>
     </footer>
 
     <div id="global-app-error" class="app-error hidden"></div>
+    @if (UserZoomSurveyFeature.IsEnabled && Model != null && !string.IsNullOrEmpty(Model.UserZoomUrl) && !string.IsNullOrEmpty(Model.UserZoomTitle))
+    {
+    <script>
+        $(document).ready(function () {
+            uztracker('send', 'page', {
+                'url': document.location.href + '/' + '@Model.UserZoomUrl',
+                'title': '@Model.UserZoomTitle'
+            });
+        });
+    </script>
+    }
+
+    <script type="text/javascript">
+        var website = {
+            name: 'NHS 111',
+            phase: 'beta',
+            version: '@NHS111.Web.Helpers.Versioning.GetWebsiteVersion()',
+            date: '@File.GetCreationTime(ViewContext.Controller.GetType().Assembly.Location)'
+        };
+
+        console.groupCollapsed('%s (%s) v%s', website.name, website.phase, website.version);
+        console.log("Date compiled %s", website.date);
+        console.groupEnd();
+    </script>
 </body>
 </html>

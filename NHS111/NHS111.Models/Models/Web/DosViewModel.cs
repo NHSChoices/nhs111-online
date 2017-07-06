@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHS111.Models.Models.Domain;
+using NHS111.Models.Models.Web.DosRequests;
 using NHS111.Models.Models.Web.FromExternalServices;
-using NHS111.Web.Presentation.Models;
 
 namespace NHS111.Models.Models.Web
 {
     using System.Threading.Tasks;
 
-    public class DosViewModel : DosCase
+    public class DosViewModel : DosFilteredCase
     {
-        public Guid SessionId { get; set; }
+        public Guid UserId { get; set; }
         public DosCheckCapacitySummaryResult DosCheckCapacitySummaryResult { get; set; }
         public DosServicesByClinicalTermResult DosServicesByClinicalTermResult { get; set; }
         public string CheckCapacitySummaryResultListJson { get; set; }
@@ -22,7 +22,7 @@ namespace NHS111.Models.Models.Web
         public string SelectedServiceId { get; set; }
         public string JourneyJson { get; set; }
         public string PathwayNo { get; set; }
-        public DosService SelectedService
+        public ServiceViewModel SelectedService
         {
             get
             {

@@ -10,7 +10,7 @@ namespace NHS111.Models.Models.Web
     public class FeedbackViewModel
     {
         [JsonProperty(PropertyName = "userId")]
-        public string SessionId { get; set; }
+        public string UserId { get; set; }
 
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }

@@ -19,6 +19,7 @@ using NHS111.Utils.Helpers;
 using NHS111.Utils.Notifier;
 using NHS111.Web.Presentation.Models;
 using IConfiguration = NHS111.Web.Presentation.Configuration.IConfiguration;
+using NHS111.Features;
 
 namespace NHS111.Web.Presentation.Builders
 {
@@ -33,9 +34,10 @@ namespace NHS111.Web.Presentation.Builders
         private readonly IMappingEngine _mappingEngine;
         private readonly ICacheManager<string, string> _cacheManager;
         private readonly INotifier<string> _notifier;
+        private readonly IITKMessagingFeature _itkMessagingFeature;
         private static readonly ILog _logger = LogManager.GetLogger(typeof (DOSBuilder));
 
-        public DOSBuilder(ICareAdviceBuilder careAdviceBuilder, IRestfulHelper restfulHelper, IConfiguration configuration, IMappingEngine mappingEngine, ICacheManager<string, string> cacheManager, INotifier<string> notifier)
+        public DOSBuilder(ICareAdviceBuilder careAdviceBuilder, IRestfulHelper restfulHelper, IConfiguration configuration, IMappingEngine mappingEngine, ICacheManager<string, string> cacheManager, INotifier<string> notifier, IITKMessagingFeature itkMessagingFeature)
         {
             _careAdviceBuilder = careAdviceBuilder;
             _restfulHelper = restfulHelper;
@@ -43,35 +45,65 @@ namespace NHS111.Web.Presentation.Builders
             _mappingEngine = mappingEngine;
             _cacheManager = cacheManager;
             _notifier = notifier;
+            _itkMessagingFeature = itkMessagingFeature;
 
             XmlConfigurator.Configure();
 
         }
 
-        public async Task<DosCheckCapacitySummaryResult> FillCheckCapacitySummaryResult(DosViewModel dosViewModel)
-        {
-            if (!string.IsNullOrEmpty(dosViewModel.JourneyJson)) dosViewModel.SymptomGroup = await BuildSymptomGroup(dosViewModel.JourneyJson);
-        
+        public async Task<DosCheckCapacitySummaryResult> FillCheckCapacitySummaryResult(DosViewModel dosViewModel, bool filterServices) {
+            const int PHARMACY = 13;
+            const int PHARMACY_EXT_HOURS = 116;
+
             var request = BuildRequestMessage(dosViewModel);
             var body = await request.Content.ReadAsStringAsync();
-            _logger.Debug(string.Format("DOSBuilder.FillCheckCapacitySummaryResult(): URL: {0} BODY: {1}", _configuration.BusinessDosCheckCapacitySummaryUrl, body));
-            var response = await _restfulHelper.PostAsync(_configuration.BusinessDosCheckCapacitySummaryUrl, request);
+
+            string checkCapacitySummaryUrl = string.Format("{0}?filterServices={1}", _configuration.BusinessDosCheckCapacitySummaryUrl, filterServices);
+           
+            _logger.Debug(string.Format("DOSBuilder.FillCheckCapacitySummaryResult(): URL: {0} BODY: {1}", checkCapacitySummaryUrl, body));
+            var response = await _restfulHelper.PostAsync(checkCapacitySummaryUrl, request);
 
             if (response.StatusCode != HttpStatusCode.OK) return new DosCheckCapacitySummaryResult { Error = new ErrorObject() { Code = (int) response.StatusCode, Message = response.ReasonPhrase } };
 
             var val = await response.Content.ReadAsStringAsync();
             var jObj = (JObject)JsonConvert.DeserializeObject(val);
-            var result = jObj["CheckCapacitySummaryResult"];
+            var results = jObj["CheckCapacitySummaryResult"];
+            var services = results.ToObject<List<ServiceViewModel>>();
+
             var checkCapacitySummaryResult = new DosCheckCapacitySummaryResult()
             {
-                Success = new SuccessObject<DosService>()
+                Success = new SuccessObject<ServiceViewModel>()
                 {
                     Code = (int)response.StatusCode,
-                    Services = result.ToObject<List<DosService>>()
+                    Services = DetermineCallbackEnabled(services)
                 }
             };
-            
+
+            var isPharmacy = new Func<DosService, bool>(s => s.ServiceType != null && (s.ServiceType.Id == PHARMACY || s.ServiceType.Id == PHARMACY_EXT_HOURS));
+
+            if (checkCapacitySummaryResult.Success.Services.Any(isPharmacy))
+                checkCapacitySummaryResult.Success.Services = checkCapacitySummaryResult.Success.Services.Take(6).ToList();
+
             return checkCapacitySummaryResult;
+        }
+
+        public List<ServiceViewModel> DetermineCallbackEnabled(List<ServiceViewModel> services)
+        {
+            var whitelist = _configuration.DOSWhitelist.Split('|');
+
+            var list = services.Select(s =>
+            {
+                s.CallbackEnabled = whitelist.Contains(s.Id.ToString());
+                return s;
+            }).ToList();
+
+            if (_itkMessagingFeature.IsEnabled)
+            {
+                return list;
+            }
+            
+            //remove callback services from list, as these are disabled
+            return list.Where(s => s.CallbackEnabled == false).ToList();
         }
 
         public async Task<DosServicesByClinicalTermResult> FillDosServicesByClinicalTermResult(DosViewModel dosViewModel)
@@ -114,7 +146,7 @@ namespace NHS111.Web.Presentation.Builders
             model.DosCheckCapacitySummaryResult = jObj["DosCheckCapacitySummaryResult"].ToObject<DosCheckCapacitySummaryResult>();
             var selectedService = model.SelectedService;
 
-            var itkMessage = await _cacheManager.Read(model.SessionId.ToString());
+            var itkMessage = await _cacheManager.Read(model.UserId.ToString());
             var document = XDocument.Parse(itkMessage);
 
             var serviceDetials = document.Root.Descendants("ServiceDetails").FirstOrDefault();
@@ -125,30 +157,18 @@ namespace NHS111.Web.Presentation.Builders
             serviceDetials.Element("address").SetValue(selectedService.Address);
             serviceDetials.Element("postcode").SetValue(selectedService.PostCode);
 
-            _cacheManager.Set(model.SessionId.ToString(), document.ToString());
-            _notifier.Notify(_configuration.IntegrationApiItkDispatcher, model.SessionId.ToString());
+            _cacheManager.Set(model.UserId.ToString(), document.ToString());
+            _notifier.Notify(_configuration.IntegrationApiItkDispatcher, model.UserId.ToString());
 
-            model.DosCheckCapacitySummaryResult = new DosCheckCapacitySummaryResult { Success = new SuccessObject<DosService>() { Services = new List<DosService>() { selectedService } } };
+            model.DosCheckCapacitySummaryResult = new DosCheckCapacitySummaryResult { Success = new SuccessObject<ServiceViewModel>() { Services = new List<ServiceViewModel>() { selectedService } } };
             model.CareAdvices = await _careAdviceBuilder.FillCareAdviceBuilder(Convert.ToInt32(model.Age), model.Gender.ToString(), model.CareAdviceMarkers.ToList());
 
             return model;
         }
 
-        public async Task<int> BuildSymptomGroup(string journeyJson)
+        public HttpRequestMessage BuildRequestMessage(DosFilteredCase dosCase)
         {
-            var journey = JsonConvert.DeserializeObject<Journey>(journeyJson);
-            var symptomGroup =
-                await
-                    _restfulHelper.GetAsync(
-                        _configuration.GetBusinessApiPathwaySymptomGroupUrl(string.Join(",",
-                            journey.Steps.Select(s => s.QuestionId.Split('.').First()).Distinct())));
-            return int.Parse(symptomGroup);
-        }
-
-        public HttpRequestMessage BuildRequestMessage(DosCase dosCase)
-        {
-            var dosCheckCapacitySummaryRequest = new DosCheckCapacitySummaryRequest(_configuration.DosUsername, _configuration.DosPassword, dosCase);
-            return new HttpRequestMessage { Content = new StringContent(JsonConvert.SerializeObject(dosCheckCapacitySummaryRequest), Encoding.UTF8, "application/json") };
+            return new HttpRequestMessage { Content = new StringContent(JsonConvert.SerializeObject(dosCase), Encoding.UTF8, "application/json") };
         }
 
         private async Task<string> GetPracticeIdFromSurgeryId(string surgeryId)
@@ -164,7 +184,7 @@ namespace NHS111.Web.Presentation.Builders
             var urlWithRequest = CreateMobileDoSUrl(endPoint, args);
             _logger.Debug("DOSBuilder.FillDosServicesByClinicalTermResult(): URL: " + urlWithRequest);
 
-            var http = new HttpClient(new HttpClientHandler {Credentials = new NetworkCredential(_configuration.DOSMobileUsername, _configuration.DOSMobilePassword) });
+            var http = new HttpClient(new HttpClientHandler {Credentials = new NetworkCredential(_configuration.DosMobileUsername, _configuration.DosMobilePassword) });
             var response = await http.GetAsync(urlWithRequest);
 
             var dosResult = await response.Content.ReadAsStringAsync();
@@ -173,16 +193,15 @@ namespace NHS111.Web.Presentation.Builders
 
         private string CreateMobileDoSUrl(string endPoint, params object[] args)
         {
-            return string.Format(_configuration.DOSMobileBaseUrl + endPoint, args);
+            return string.Format(_configuration.DosMobileBaseUrl + endPoint, args);
         }
     }
 
     public interface IDOSBuilder
     {
-        Task<DosCheckCapacitySummaryResult> FillCheckCapacitySummaryResult(DosViewModel dosViewModel);
+        Task<DosCheckCapacitySummaryResult> FillCheckCapacitySummaryResult(DosViewModel dosViewModel, bool filterServices);
         Task<DosServicesByClinicalTermResult> FillDosServicesByClinicalTermResult(DosViewModel dosViewModel);
         Task<DosViewModel> FillServiceDetailsBuilder(DosViewModel model);
-        Task<int> BuildSymptomGroup(string journeyJson);
-        HttpRequestMessage BuildRequestMessage(DosCase dosCase);
+        HttpRequestMessage BuildRequestMessage(DosFilteredCase dosCase);
     }
 }

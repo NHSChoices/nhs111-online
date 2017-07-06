@@ -7,7 +7,7 @@ namespace NHS111.Models.Models.Web
     public class AddressSearchViewModel
     {
         public string PostCode { get; set; }
-        public List<AddressInfo> AddressInfoList { get; set; }
+        public List<AddressInfoViewModel> AddressInfoList { get; set; }
         public string SelectedAddress { get; set; }
         public string PostcodeApiAddress { get; set; }
         public string PostcodeApiSubscriptionKey { get; set; }
@@ -18,8 +18,8 @@ namespace NHS111.Models.Models.Web
             {
                 return AddressInfoList.Select(x => new SelectListItem
                 {
-                    Value = x.PostCode,
-                    Text = string.Format("{0} {1} {2} {3} {4}", x.HouseNumber, x.AddressLine1, x.AddressLine2, x.City, x.PostCode),
+                    Value = x.Postcode,
+                    Text = string.Format("{0} {1} {2} {3} {4}", x.HouseNumber, x.AddressLine1, x.AddressLine2, x.City, x.Postcode),
                     Selected = false
                 });
             }
@@ -27,7 +27,7 @@ namespace NHS111.Models.Models.Web
 
         public AddressSearchViewModel()
         {
-            AddressInfoList = new List<AddressInfo>();
+            AddressInfoList = new List<AddressInfoViewModel>();
         }
     }
 }

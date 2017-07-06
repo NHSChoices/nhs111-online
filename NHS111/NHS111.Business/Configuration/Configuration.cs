@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using Nest;
 using Newtonsoft.Json;
 
 namespace NHS111.Business.Configuration
@@ -51,10 +53,20 @@ namespace NHS111.Business.Configuration
                 Replace("{selectedQuestionId}", selectedQuestionId);
         }
 
-        public string GetDomainApiPathwaysUrl(bool grouped)
+        public string GetDomainApiPathwaysUrl(bool grouped, bool startingOnly)
         {
-            return GetDomainApiUrl("DomainApiPathwaysUrl").
-                Replace("{grouped}", grouped.ToString());
+            return GetDomainApiUrl("DomainApiPathwaysUrl")
+                .Replace("{grouped}", grouped.ToString())
+                .Replace("{startingOnly}", startingOnly.ToString());
+        }
+
+        public string GetDomainApiPathwaysUrl(bool grouped, bool startingOnly, string gender, int age)
+        {
+            return GetDomainApiUrl("DomainApiPathwaysAgeGenderUrl")
+                .Replace("{grouped}", grouped.ToString())
+                .Replace("{startingOnly}", startingOnly.ToString())
+                .Replace("{gender}", gender)
+                .Replace("{age}", age.ToString());
         }
 
         public string GetDomainApiPathwayUrl(string pathwayId)
@@ -118,6 +130,34 @@ namespace NHS111.Business.Configuration
         {
             return ConfigurationManager.AppSettings["RedisUrl"];
         }
+
+
+        public string GetDomainApiSymptomDisciminatorUrl(string symptomDiscriminatorCode)
+        {
+            return GetDomainApiUrl("DomainApiSymptomDiscriminatorCodeUrl").Replace("{SymptomDiscriminatorCodeId}", symptomDiscriminatorCode);
+        }
+
+        public string GetCategoriesWithPathwaysUrl() {
+            return GetDomainApiUrl("DomainApiGetCategoriesWithPathwaysUrl");
+        }
+
+
+        public string GetCategoriesWithPathwaysUrl(string gender, int age)
+        {
+            return GetDomainApiUrl("DomainApiGetCategoriesWithPathwaysAgeGenderUrl")
+                .Replace("{gender}", gender)
+                .Replace("{age}", age.ToString());
+        }
+
+        public ConnectionSettings GetElasticClientSettings()
+        {
+            return new ConnectionSettings(new Uri(ConfigurationManager.AppSettings["PathwayElasticSearchUrl"]));
+        }
+
+        public IElasticClient GetElasticClient()
+        {
+            return new ElasticClient(GetElasticClientSettings().DisableDirectStreaming());
+        }
     }
 
     public interface IConfiguration
@@ -133,7 +173,8 @@ namespace NHS111.Business.Configuration
         string GetDomainApiJustToBeSafeQuestionsNextUrl(string pathwayId, IEnumerable<string> answeredQuestionIds, bool multipleChoice, string selectedQuestionId);
 
         /* Pathways */
-        string GetDomainApiPathwaysUrl(bool grouped);
+        string GetDomainApiPathwaysUrl(bool grouped, bool startingOnly);
+        string GetDomainApiPathwaysUrl(bool grouped, bool startingOnly, string gender, int age);
         string GetDomainApiPathwayUrl(string pathwayId);
         string GetDomainApiIdentifiedPathwayUrl(string pathwayNumbers, string gender, int age);
         string GetDomainApiIdentifiedPathwayFromTitleUrl(string pathwayTitle, string gender, int age);
@@ -148,5 +189,17 @@ namespace NHS111.Business.Configuration
         string GetDomainApiListOutcomesUrl();
 
         string GetRedisUrl();
+
+        /* Symptom disciminator */
+        string GetDomainApiSymptomDisciminatorUrl(string symptomDiscriminatorCode);
+
+        /*Categories*/
+        string GetCategoriesWithPathwaysUrl();
+        string GetCategoriesWithPathwaysUrl(string gender, int age);
+
+        /*Pathways Search */
+
+        ConnectionSettings GetElasticClientSettings();
+        IElasticClient GetElasticClient();
     }
 }

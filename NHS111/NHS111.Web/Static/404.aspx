@@ -26,8 +26,8 @@
     
     <script>
         $(function () {
-            var sessionId = $.cookie("sessionId");
-            if (!sessionId) $.cookie("sessionId", '<%=Guid.NewGuid()%>', { path: '/' });
+            var userId = $.cookie("userId");
+            if (!userId) $.cookie("userId", '<%=Guid.NewGuid()%>', { path: '/' });
         });
     </script>
     
@@ -136,7 +136,7 @@
                         <a class="feedback-btn feedback-submit" id="btnFeedback" onclick="SubmitFeedback(this);">Submit</a>
                     </div>
                 </div>
-                <input id="SessionId" name="SessionId" type="hidden" value="" />
+                <input id="UserId" name="UserId" type="hidden" value="" />
                 <input id="PageId" name="PageId" type="hidden" value="/static/404.aspx" />
             </form>
         </div>
@@ -156,8 +156,8 @@
     });
 
     $(document).ready(function () {
-        var $sessionId = $("#FeedbackForm #SessionId");
-        $sessionId.val($.cookie("sessionId"));
+        var $userId = $("#FeedbackForm #UserId");
+        $userId.val($.cookie("userId"));
     });
 
     $("#Text").keypress(function (event) {

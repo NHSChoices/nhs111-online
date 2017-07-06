@@ -4,37 +4,51 @@
     Layout = "~/Views/Shared/_LayoutNhsUK.cshtml";
 }
 @section Title
-{NHS 111 Online}
-@section Scripts {
+{NHS 111 - 999}
+
+@section HeadTop {
+    @{ var url = string.Format("/outcome/{0}/{1}/{2}/disposition/", Url.Encode(Model.PathwayNo), Url.Encode(Model.OutcomeGroup.Text), Url.Encode(Model.Id)); }
     <script>
         var pageId = '@Model.Id';
         dataLayer = [
         {
-            'virtualPageUrl': document.location.pathname + '/' + pageId,
+            'virtualPageUrl': '@url',
             'virtualPageTitle': '@Model.TitleWithoutBullets'
         }];
     </script>
 }
 
-@section OuterSection{
+
+@section Scripts {
+    <!--<script src="~/scripts/jquery2.1.1.min.js"></script> included on layout page -->
+    <script src="~/scripts/jquery1.11.2-ui.min.js"></script>
+    <script src="~/scripts/jquery.blockUI.js"></script>
+    <script src="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/scripts/custom.js")"></script>
+    <link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/Content/css_NhsUK/signposting-outcome.css") media="all" rel="stylesheet" type="text/css" />
+}
+
+@section SurveyBanner {
+    @Html.Partial("_SurveyLink", Model.SurveyLink, new ViewDataDictionary() { { "999Survey", "true" } })
 }
 
 @section FeedbackSection {
+    @Html.Partial("_SurveyLink", Model.SurveyLink, new ViewDataDictionary() { { "999Survey", "true" } })
 }
 
-<link href="~/content/css_NhsUk/disposition.css" media="screen" rel="stylesheet" type="text/css"/>
+@Html.Partial("_OutcomeHeader", Model, new ViewDataDictionary() { { "OverrideWorseningAdvice", "true" } })
 
-@Html.Partial("_SessionId", Model)
+<div id="wrapper">
+    <div>
 
-<h2>This is a test service and you’ve reached the end of the questions.</h2>
-<p>
-    <strong>If you need medical advice visit <a href="http://www.nhs.uk">www.nhs.uk</a> or call 111. To start the test again <a href="/">click here</a>.</strong>
-</p>
+    </div> <!--/ContentWrapper-->
+    @using (Html.BeginForm("Navigation", "Question", FormMethod.Post))
+    {
 
-<div class="disposition-panel">
-    <p class="disposition-title">
-        If this was a real service we would have told you to call 999.
-    </p>
+        @Html.Partial("_CommonHiddenFieldsOutcomeViewModel", Model)
+        <div class="changeAnswers row">
+            <input class="button-link-prev button-link" type="submit" name="PreviousQuestion" value="Change my previous answer" />
+        </div>
 
-    @Html.Partial("_AlphaFeedback", new FeedbackViewModel() { PageId = Model.Id })
-</div>
+    }
+
+</div> <!-- /site -->

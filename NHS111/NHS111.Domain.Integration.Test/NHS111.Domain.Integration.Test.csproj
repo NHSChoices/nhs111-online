@@ -39,9 +39,9 @@
     <Reference Include="Neo4jClient">
       <HintPath>..\packages\Neo4jClient.1.1.0.9\lib\net45\Neo4jClient.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
@@ -84,6 +84,10 @@
     <ProjectReference Include="..\NHS111.Domain\NHS111.Domain.csproj">
       <Project>{1b36b587-9dc6-4382-b0a0-2139218c8a45}</Project>
       <Name>NHS111.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHS111.Features\NHS111.Features.csproj">
+      <Project>{BD9F2634-BADA-43E6-B16D-522BE17DA255}</Project>
+      <Name>NHS111.Features</Name>
     </ProjectReference>
     <ProjectReference Include="..\NHS111.Models\NHS111.Models.csproj">
       <Project>{4ccf3abd-92c4-4999-8520-c4aa7b36f48c}</Project>

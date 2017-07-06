@@ -16,9 +16,15 @@ namespace NHS111.Business.Services
             _restfulHelper = restfulHelper;
         }
 
-        public async Task<string> GetPathways(bool grouped)
+        public async Task<string> GetPathways(bool grouped, bool startingOnly)
         {
-            return await _restfulHelper.GetAsync(_configuration.GetDomainApiPathwaysUrl(grouped));
+            return await _restfulHelper.GetAsync(_configuration.GetDomainApiPathwaysUrl(grouped, startingOnly));
+        }
+
+        public async Task<string> GetPathways(bool grouped, bool startingOnly, string gender, int age)
+        {
+            return await _restfulHelper.GetAsync(_configuration.GetDomainApiPathwaysUrl(grouped, startingOnly, gender, age));
+            
         }
 
         public async Task<string> GetPathway(string pathwayId)
@@ -45,11 +51,15 @@ namespace NHS111.Business.Services
         {
             return await _restfulHelper.GetAsync(_configuration.GetDomainApiPathwayNumbersUrl(pathwayTitle));
         }
+
+
+       
     }
 
     public interface IPathwayService
     {
-        Task<string> GetPathways(bool grouped);
+        Task<string> GetPathways(bool grouped, bool startingOnly);
+        Task<string> GetPathways(bool grouped, bool startingOnly, string gender, int age);
         Task<string> GetPathway(string pathwayId);
         Task<string> GetSymptomGroup(string pathwayNumbers);
         Task<string> GetIdentifiedPathway(string pathwayNumbers, string gender, int age);

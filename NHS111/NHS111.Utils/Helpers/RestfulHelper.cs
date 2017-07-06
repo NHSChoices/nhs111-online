@@ -7,6 +7,7 @@ namespace NHS111.Utils.Helpers {
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
 
     public class RestfulHelper : IRestfulHelper {
 
@@ -20,7 +21,7 @@ namespace NHS111.Utils.Helpers {
         }
 
         public RestfulHelper() {
-            _webClient = new WebClient();
+            _webClient = new WebClient() { Encoding = Encoding.UTF8 };
             _httpClient = new HttpClient();
             _httpClientFactory = new HttpClientFactory();
         }
@@ -40,22 +41,30 @@ namespace NHS111.Utils.Helpers {
             }
             catch (WebException e) {
                 using (var stream = new StreamReader(e.Response.GetResponseStream())) {
-                    throw new WebException(
-                        string.Format("There was a problem requesting '{0}'; {1}", url, stream.ReadToEnd()), e);
+                    string result = stream.ReadToEnd();
+                    if (e.Response.ContentType == "application/json") {
+                        var obj = JsonConvert.DeserializeObject(result);
+                        result = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                    }
+                    throw new WebException(string.Format("There was a problem requesting '{0}'; {1}", url, result), e);
                 }
             }
         }
 
-        public async Task<string> GetAsync(string url, string credentials) {
+        public async Task<string> GetAsync(string url, Dictionary<string, string> headers) {
             try {
-                _webClient.Headers[HttpRequestHeader.Authorization] = credentials;
+                foreach (var header in headers)
+                {
+                    _webClient.Headers.Add(header.Key, header.Value);
+                }
 
                 return await _webClient.DownloadStringTaskAsync(new Uri(url));
             }
             catch (WebException e) {
                 using (var stream = new StreamReader(e.Response.GetResponseStream())) {
-                    throw new WebException(
-                        string.Format("There was a problem requesting '{0}'; {1}", url, stream.ReadToEnd()), e);
+                    var obj = JsonConvert.DeserializeObject(stream.ReadToEnd());
+                    var formatted = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                    throw new WebException(string.Format("There was a problem requesting '{0}'; {1}", url, formatted), e);
                 }
             }
         }
@@ -77,7 +86,7 @@ namespace NHS111.Utils.Helpers {
         }
 
         private async Task<HttpRequestMessage> BuildRequestMessage(string url, HttpRequestMessage request) {
-            var data = await request.Content.ReadAsStringAsync();
+            var data = request.Content == null ? "" : await request.Content.ReadAsStringAsync();
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(url)) {
                 Content = new StringContent(data, Encoding.UTF8, "application/json"),
                 Version = HttpVersion.Version10 //forcing 1.0 to prevent Expect 100 Continue header
@@ -94,7 +103,7 @@ namespace NHS111.Utils.Helpers {
         Task<HttpResponseMessage> GetResponseAsync(string url);
         Task<HttpResponseMessage> GetResponseAsync(string url, string username, string password);
         Task<string> GetAsync(string url);
-        Task<string> GetAsync(string url, string credentials);
+        Task<string> GetAsync(string url, Dictionary<string, string> headers);
         Task<HttpResponseMessage> PostAsync(string url, HttpRequestMessage request);
         Task<HttpResponseMessage> PostAsync(string url, HttpRequestMessage request, Dictionary<string, string> headers);
     }

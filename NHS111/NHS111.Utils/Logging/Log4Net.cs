@@ -28,9 +28,9 @@ namespace NHS111.Utils.Logging
             Logger.Error(msg);
         }
 
-        public static void State(string msg)
+        public static void Audit(string msg)
         {
-            Logger.State(msg);
+            Logger.Audit(msg);
         }
     }
 }

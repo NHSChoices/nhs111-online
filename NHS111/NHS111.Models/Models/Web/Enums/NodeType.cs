@@ -5,6 +5,9 @@
         Question,
         Pathway,
         Outcome,
-        DeadEndJump
+        DeadEndJump,
+        CareAdvice,
+        PathwaySelectionJump,
+        Set
     }
 }

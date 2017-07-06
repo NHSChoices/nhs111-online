@@ -65,8 +65,53 @@
       <HintPath>..\packages\AutoMapper.4.2.1\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.2.15.0.2\lib\net45\CsvHelper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.5.0.1\lib\net45\Elasticsearch.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.2.1.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.MVC5.6.2.1.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=7.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.7.2.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nest, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.5.0.1\lib\net45\Nest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=4.0.1.318, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\structuremap.4.0.1.318\lib\net40\StructureMap.dll</HintPath>
@@ -82,9 +127,33 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.0.0\lib\net45\System.Web.Mvc.dll</HintPath>
+    <Reference Include="System.Spatial, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.6.4\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.0\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -94,12 +163,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mappers\StaticTextToHtml.cs" />
+    <Compile Include="Mappers\WebMappings\AuditedModelMappers.cs" />
     <Compile Include="Mappers\WebMappings\AutoMapperWebConfiguration.cs" />
     <Compile Include="Mappers\WebMappings\FromDosCaseToDosServicesByClinicalTermRequest.cs" />
     <Compile Include="Mappers\WebMappings\FromOutcomeViewModelToDosViewModel.cs" />
     <Compile Include="Mappers\WebMappings\FromOutcomeVIewModelToITKDispatchRequest.cs" />
     <Compile Include="Mappers\WebMappings\FromOutcomeViewModelToSubmitEncounterToServiceRequest.cs" />
-    <Compile Include="Mappers\WebMappings\FromPafToAddressInfo.cs" />
+    <Compile Include="Mappers\WebMappings\AddressInfoViewModelMapper.cs" />
+    <Compile Include="Models\Business\Enums\DispositionTimePeriod.cs" />
+    <Compile Include="Models\Business\PathwaySearch\PathwayPhraseResult.cs" />
+    <Compile Include="Models\Business\PathwaySearch\PathwaySearchResult.cs" />
+    <Compile Include="Models\Business\ProfileServiceTimes.cs" />
     <Compile Include="Models\Business\Suggestion.cs" />
     <Compile Include="Models\Configuration\LivePathwaysCollection.cs" />
     <Compile Include="Models\Configuration\LivePathwaysElement.cs" />
@@ -110,9 +184,20 @@
     <Compile Include="Models\Domain\Answer.cs" />
     <Compile Include="Models\Domain\CareAdvice.cs" />
     <Compile Include="Models\Domain\CareAdviceText.cs" />
+    <Compile Include="Models\Domain\Category.cs" />
+    <Compile Include="Models\Domain\CategoryPathwaysFlattened.cs" />
+    <Compile Include="Models\Domain\CategoryWithPathways.cs" />
     <Compile Include="Models\Domain\DefinedTerm.cs" />
     <Compile Include="Models\Domain\DispositionCode.cs" />
     <Compile Include="Models\Domain\OutcomeGroup.cs" />
+    <Compile Include="Models\Domain\PathwayMetaData.cs" />
+    <Compile Include="Models\Domain\PathwayWithDescription.cs" />
+    <Compile Include="Models\Domain\QuestionWithPathwaySelection.cs" />
+    <Compile Include="Models\Domain\SymptomDiscriminator.cs" />
+    <Compile Include="Models\Web\AgeGenderViewModel.cs" />
+    <Compile Include="Models\Web\Clock\SystemClock.cs" />
+    <Compile Include="Models\Web\Clock\IClock.cs" />
+    <Compile Include="Models\Web\DosRequests\DosFilteredCase.cs" />
     <Compile Include="Models\Web\DosRequests\DosServicesByClinicalTermRequest.cs" />
     <Compile Include="Models\Web\FeedbackViewModel.cs" />
     <Compile Include="Models\Web\FromExternalServices\DosCheckCapacitySummaryResult.cs" />
@@ -128,7 +213,7 @@
     <Compile Include="IoC\ModelsRegistry.cs" />
     <Compile Include="Mappers\WebMappings\JourneyViewModelMapper.cs" />
     <Compile Include="Models\Domain\QuestionWithAnswers.cs" />
-    <Compile Include="Models\Web\AddressInfo.cs" />
+    <Compile Include="Models\Web\AddressInfoViewModel.cs" />
     <Compile Include="Models\Web\AddressSearchViewModel.cs" />
     <Compile Include="Models\Web\DosRequests\DosCase.cs" />
     <Compile Include="Models\Web\DosRequests\DosCheckCapacitySummaryRequest.cs" />
@@ -137,6 +222,8 @@
     <Compile Include="Models\Web\Enums\Urgency.cs" />
     <Compile Include="Models\Web\FeedbackConfirmation.cs" />
     <Compile Include="Models\Web\FromExternalServices\ErrorObject.cs" />
+    <Compile Include="Models\Web\FromExternalServices\LocationCoordinates.cs" />
+    <Compile Include="Models\Web\FromExternalServices\LocationResult.cs" />
     <Compile Include="Models\Web\FromExternalServices\MobileDosService.cs" />
     <Compile Include="Models\Web\FromExternalServices\PAF.cs" />
     <Compile Include="Models\Web\FromExternalServices\ServiceDetails.cs" />
@@ -145,12 +232,15 @@
     <Compile Include="Models\Web\FromExternalServices\Journey.cs" />
     <Compile Include="Models\Web\FromExternalServices\JourneyStep.cs" />
     <Compile Include="Models\Web\FromExternalServices\SuccessObject.cs" />
+    <Compile Include="Models\Web\FromExternalServices\ValidPostCode.cs" />
+    <Compile Include="Models\Web\InformantViewModel.cs" />
     <Compile Include="Models\Web\ITK\Address.cs" />
     <Compile Include="Models\Web\ITK\Authentication.cs" />
     <Compile Include="Models\Web\ITK\CaseDetails.cs" />
     <Compile Include="Models\Web\ITK\CaseSummary.cs" />
     <Compile Include="Models\Web\ITK\ContactDetails.cs" />
     <Compile Include="Models\Web\ITK\GpPractice.cs" />
+    <Compile Include="Models\Web\ITK\InformantDetails.cs" />
     <Compile Include="Models\Web\ITK\ITKDispatchRequest.cs" />
     <Compile Include="Models\Web\ITK\ITKDispatchResponse.cs" />
     <Compile Include="Models\Web\ITK\PatientDetails.cs" />
@@ -161,18 +251,50 @@
     <Compile Include="Models\Web\JustToBeSafeViewModel.cs" />
     <Compile Include="Models\Web\Enums\NodeType.cs" />
     <Compile Include="Models\Web\KeywordBag.cs" />
+    <Compile Include="Models\Web\Logging\AuditedDosRequest.cs" />
+    <Compile Include="Models\Web\Logging\AuditedDosResponse.cs" />
+    <Compile Include="Models\Web\Logging\AuditedItkRequest.cs" />
+    <Compile Include="Models\Web\Logging\AuditedItkResponse.cs" />
+    <Compile Include="Models\Web\Logging\AuditEntry.cs" />
+    <Compile Include="Models\Web\Logging\AuditViewModel.cs" />
+    <Compile Include="Models\Web\Logging\LogEntry.cs" />
     <Compile Include="Models\Web\OutcomeViewModel.cs" />
     <Compile Include="Models\Web\JourneyViewModel.cs" />
     <Compile Include="Models\Web\FromExternalServices\Surgery.cs" />
+    <Compile Include="Models\Web\SearchJourneyViewModel.cs" />
+    <Compile Include="Models\Web\SearchResultViewModel.cs" />
+    <Compile Include="Models\Web\SurveyLinkViewModel.cs" />
+    <Compile Include="Models\Web\Validators\DateOfBirthDayValidator.cs" />
+    <Compile Include="Models\Web\Validators\DateOfBirthMonthValidator.cs" />
+    <Compile Include="Models\Web\Validators\DateOfBirthYearValidator.cs" />
+    <Compile Include="Models\Web\Validators\FindServicesAddressViewModelValidator.cs" />
+    <Compile Include="Models\Web\Validators\InformantForenameValidator.cs" />
+    <Compile Include="Models\Web\Validators\InformantSurnameValidator.cs" />
+    <Compile Include="Models\Web\Validators\InformantViewModelValidator.cs" />
+    <Compile Include="Models\Web\Validators\RuleBuilderExtensions\RuleBuilderExtensions.cs" />
+    <Compile Include="Models\Web\ServiceViewModel.cs" />
     <Compile Include="Models\Web\SurgeryViewModel.cs" />
     <Compile Include="Models\Web\UserInfo.cs" />
     <Compile Include="Models\Web\Users.cs" />
+    <Compile Include="Models\Web\Validators\AgeGenderViewModelValidator.cs" />
+    <Compile Include="Models\Web\Validators\AgeValidator.cs" />
+    <Compile Include="Models\Web\Validators\DateOfBirthValidator.cs" />
+    <Compile Include="Models\Web\Validators\PersonalInfoAddressViewModelValidator.cs" />
+    <Compile Include="Models\Web\Validators\PostCodeAllowedValidator.cs" />
+    <Compile Include="Models\Web\Validators\PostCodeFormatValidator.cs" />
+    <Compile Include="Models\Web\Validators\UserInfoValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\NHS111.Features\NHS111.Features.csproj">
+      <Project>{bd9f2634-bada-43e6-b16d-522be17da255}</Project>
+      <Name>NHS111.Features</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,5 +1,6 @@
 ﻿@using NHS111.Models.Models.Web
-@model OutcomeViewModel
+@using NHS111.Models.Models.Web.ITK
+@inherits NHS111.Web.Views.Shared.SurveyLinkView<OutcomeViewModel>
 @{
     Layout = "~/Views/Shared/_LayoutNhsUk.cshtml";
 }
@@ -8,78 +9,104 @@
     Enter Personal Details
 }
 
-@section FeedbackSection {
-    @Html.Partial("_FeedbackDetails", new FeedbackViewModel() { PageId = Model.Id })
+@section HeadTop {
+    @{ var url = string.Format("/outcome/{0}/{1}/{2}/itk/personaldetails/{3}/{4}", Url.Encode(Model.PathwayNo), Url.Encode(Model.OutcomeGroup.Text), Url.Encode(Model.Id), Url.Encode(Model.SelectedServiceId), Url.Encode(Model.SelectedService.Name)); }
+    <script>
+        var pageId = '@Model.Id';
+        dataLayer = [
+        {
+            'virtualPageUrl': '@url',
+            'virtualPageTitle': '@Model.TitleWithoutBullets'
+        }];
+    </script>
 }
 
-<link href="~/content/css_NhsUk/personaldetails.css" media="screen" rel="stylesheet" type="text/css"/>
-<link href="~/content/css_NhsUk/service.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/content/css_NhsUk/personaldetails.css")" media="screen" rel="stylesheet" type="text/css" />
+<link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/content/css_NhsUk/service.css")" media="screen" rel="stylesheet" type="text/css" /> 
 
-<section>
-    <div class="section-item">
-        <h3 class="section-header">
-            Your selected service
-        </h3>
-        <div class="personal-details-content">
-            @Html.Partial("_SelectedService", Model.SelectedService)
-            <div class="form-item-wrapper">
-                <fieldset>
-                    <div class="form-group">
-                        @using (Html.BeginForm("ServiceList", "Outcome", FormMethod.Post))
-                        {
-                            @Html.Partial("_CommonHiddenFieldsOutcomeViewModel", Model)
-                            <div class="row">
-                                <input class="button button-next button-link" type="submit" name="DifferentService" value="Choose a different service" />
-                            </div>
-                        }
-                    </div>
-                </fieldset>
-            </div>
-        </div>
-    </div>
-</section>
+@{
+    var dataDictionary = ViewContext.ViewData;
+    dataDictionary.Add(new KeyValuePair<string, object>("LaunchPage", "personal-details"));
+}
+@section SurveyBanner{
+    @Html.Partial("_SurveyLink", Model.SurveyLink, dataDictionary)
+}
+@section FeedbackSection {
+    @if (!SurveyLinkFeature.IsEnabled)
+    {
+        @Html.Partial("_FeedbackDetails", new FeedbackViewModel() { UserId = Model.SessionId.ToString(), PageId = Model.Id });
+    }
+    else
+    {
+        @Html.Partial("_SurveyLink", Model.SurveyLink)
+    }
+}
 
-@using (Html.BeginForm("Confirmation", "Outcome", FormMethod.Post))
+@using (Html.BeginForm("Confirmation", "Outcome", FormMethod.Post, new { id = "personalDetailForm" }))
 {
     @Html.Partial("_CommonHiddenFieldsOutcomeViewModel", Model)
-    @Html.Partial("_CommonHiddenFieldsHomeAddressInfo", Model.UserInfo.HomeAddress, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "HomeAddress" } })
+    @Html.Partial("_CommonHiddenFieldsCareAdviceViewModel", Model)
     @Html.HiddenFor(m => m.SelectedServiceId)
-    <section>
+    <section style="margin-top: 40px;">
         <div class="section-item last">
             <h3 class="section-header">
-                Your contact information
+                Enter your details
             </h3>
-            <div class="personal-details-content">
-                <label>
-                    Full name
-                </label>
-                <div class="inline-details">
-                    @Html.TextBoxFor(m => m.UserInfo.FirstName, new { @class = "form-control form-control-4-chars", placeholder = "First name" })
-                    @Html.TextBoxFor(m => m.UserInfo.LastName, new { @class = "form-control form-control-4-chars", placeholder = "Last name" })
-                </div>
+            <h4 class="section-header">
+                If you were answering the questions about someone else, enter their details instead
+            </h4>
 
-                <label>
-                    Date of birth
-                </label>
-                <label class="form-hint">
-                    For example 18 4 1973
-                </label>
-                <div class="inline-details">
-                    @Html.TextBoxFor(m => m.UserInfo.Day, new { @class = "form-control form-control-2-chars", placeholder = "DD" })
-                    @Html.TextBoxFor(m => m.UserInfo.Month, new { @class = "form-control form-control-2-chars", placeholder = "MM" })
-                    @Html.TextBoxFor(m => m.UserInfo.Year, new { @class = "form-control form-control-4-chars", placeholder = "YYYY" })
-                </div>
+            @Html.Partial("_PersonalDetailsSelf", Model, dataDictionary)
+
+            @Html.Partial("_InformantDetails", Model.Informant, dataDictionary)
+
+            <div class="personal-details-content">
                 <label>
                     Contact number
                 </label>
+                <div>@Html.ValidationMessageFor(m => m.UserInfo.TelephoneNumber, "Please enter a valid phone number")</div>
                 <div class="inline-details">
-                    @Html.TextBoxFor(m => m.UserInfo.TelephoneNumber, new { @class = "form-control", placeholder = "Landline or mobile number" })
+                    @Html.TextBoxFor(m => m.UserInfo.TelephoneNumber, new { @class = "form-control form-control-16-chars", placeholder = "Landline or mobile number", type = "tel" })
                 </div>
-                @Html.Partial("_PersonalPostCodeSearch", Model.AddressSearchViewModel, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "AddressSearchViewModel" } })
                 <div class="inline-details">
-                    <input type="submit" class="button button-submit-details" value="Submit my details" />
+                    <p class="submit-details-disclaimer">
+                        By clicking Submit my details, you agree to share your information with other NHS organisations.
+                        See our @Html.ActionLink("privacy policy", "Privacy", "Help", null, new { target = "_blank" }) for more information.
+                    </p>
+                    <button type="submit" class="button button-submit-details" id="submitDetails">Submit my details</button>
                 </div>
             </div>
         </div>
     </section>
-}
+
+    @Html.Partial("_PageLoadingIndicator")                    }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        stopPageLoadingIndicator();
+        toggleInformant($('#Informant'));
+    });
+
+    $(document).on('click', '#submitDetails', function (event) {
+        if ($("#personalDetailForm").valid()) startPageLoadingIndicator('Contacting your selected service...');
+    });
+
+    $(document).on('click', '#Informant', function () {
+        toggleInformant($(this));
+    });
+
+    window.onpageshow = function (event) {
+        stopPageLoadingIndicator();
+    };
+
+    function toggleInformant($informantCheckbox) {
+        if ($informantCheckbox.is(':checked')) {
+            $('#informant-details').show();
+        }
+        else {
+            $('#informant-details').hide();
+            $('#Informant_Forename').val('');
+            $('#Informant_Surname').val('');
+        }
+    }
+</script>

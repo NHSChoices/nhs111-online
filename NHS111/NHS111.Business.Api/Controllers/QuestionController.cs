@@ -70,11 +70,41 @@ namespace NHS111.Business.Api.Controllers
                 return result.AsHttpResponse();
             }
 
+            if (nextLabel == "PathwaySelectionJump")
+            {
+                next.State = stateDictionary;
+                var result = _questionTransformer.AsQuestionWithDeadEnd(JsonConvert.SerializeObject(next));
+                return result.AsHttpResponse();
+            }
+
             if (nextLabel == "Set")
             {
-                stateDictionary.Add(next.Question.Title, next.Answers.First().Title);
+                var answered = next.Answers.First();
+                stateDictionary.Add(next.Question.Title, answered.Title);
                 var updatedState = JsonConvert.SerializeObject(stateDictionary);
-                return await GetNextNode(pathwayId, next.Question.Id, updatedState, next.Answers.First().Title, cacheKey);
+                var httpResponseMessage = await GetNextNode(pathwayId, next.Question.Id, updatedState, answered.Title, cacheKey);
+                var nextQuestion = JsonConvert.DeserializeObject<QuestionWithAnswers>(await httpResponseMessage.Content.ReadAsStringAsync());
+              
+                nextQuestion.NonQuestionKeywords = answered.Keywords;
+                nextQuestion.NonQuestionExcludeKeywords = answered.ExcludeKeywords;
+                if (nextQuestion.Answers != null)
+                {
+                    foreach (var nextAnswer in nextQuestion.Answers)
+                    {
+                        nextAnswer.Keywords += "|" + answered.Keywords;
+                        nextAnswer.ExcludeKeywords += "|" + answered.ExcludeKeywords;
+                    }
+                }
+
+                // have to add the node to the cache so thats its not missed when going back
+                // to collect keywords 
+                var result = JsonConvert.SerializeObject(nextQuestion);
+                
+                #if !DEBUG
+ 	                _cacheManager.Set(cacheKey, result);
+ 	            #endif
+
+ 	            return result.AsHttpResponse();
             }
 
             if (nextLabel == "Read")
@@ -89,8 +119,12 @@ namespace NHS111.Business.Api.Controllers
             if (nextLabel == "CareAdvice")
             {
                 stateDictionary.Add(next.Question.QuestionNo, "");
-                var updatedState = JsonConvert.SerializeObject(stateDictionary);
-                return await GetNextNode(pathwayId, next.Question.Id, updatedState, next.Answers.First().Title, cacheKey);
+                next.State = stateDictionary;
+                //next.Answers.First().Keywords += "|" + answered.Keywords;
+                //nextAnswer.ExcludeKeywords += "|" + answered.ExcludeKeywords;
+
+                var result = _questionTransformer.AsQuestionWithAnswers(JsonConvert.SerializeObject(next));
+                return result.AsHttpResponse();
             }
 
             if (nextLabel == "InlineDisposition")
@@ -108,9 +142,41 @@ namespace NHS111.Business.Api.Controllers
         }
 
         [Route("node/{pathwayId}/question/{questionId}")]
-        public async Task<HttpResponseMessage> GetQuestionById(string pathwayId, string questionId)
+        public async Task<HttpResponseMessage> GetQuestionById(string pathwayId, string questionId, string cacheKey = null)
         {
-            return _questionTransformer.AsQuestionWithAnswers(await _questionService.GetQuestion(questionId)).AsHttpResponse();
+#if !DEBUG
+                cacheKey = cacheKey ?? string.Format("GetQuestionById-{0}-{1}", pathwayId, questionId);
+
+                var cacheValue = await _cacheManager.Read(cacheKey);
+                if (cacheValue != null)
+                {
+                    return cacheValue.AsHttpResponse();
+                }
+#endif
+
+            var node = JsonConvert.DeserializeObject<QuestionWithAnswers>(await _questionService.GetQuestion(questionId));
+
+            var nextLabel = node.Labels.FirstOrDefault();
+
+            if (nextLabel == "Question" || nextLabel == "Outcome" || nextLabel == "CareAdvice")
+            {
+                var result = _questionTransformer.AsQuestionWithAnswers(JsonConvert.SerializeObject(node));
+
+#if !DEBUG
+                    _cacheManager.Set(cacheKey, result);
+#endif
+
+                return result.AsHttpResponse();
+            }
+
+            if (nextLabel == "DeadEndJump")
+            {
+                var result = _questionTransformer.AsQuestionWithDeadEnd(JsonConvert.SerializeObject(node));
+                return result.AsHttpResponse();
+            }
+
+            throw new Exception(string.Format("Unrecognized node of type '{0}'.", nextLabel));
+
         }
 
         [HttpGet]
@@ -119,7 +185,9 @@ namespace NHS111.Business.Api.Controllers
         {
             var firstNodeJson = _questionTransformer.AsQuestionWithAnswers(await (await _questionService.GetFirstQuestion(pathwayId).AsHttpResponse()).Content.ReadAsStringAsync());
             var firstNode = JsonConvert.DeserializeObject<QuestionWithAnswers>(firstNodeJson);
+            
             var stateDictionary = JsonConvert.DeserializeObject<IDictionary<string, string>>(HttpUtility.UrlDecode(state));
+            stateDictionary.Add("SYSTEM_ONLINE", "online");//turn on online question flows
             var nextLabel = firstNode.Labels.FirstOrDefault();
 
             if (nextLabel == "Read")
@@ -129,7 +197,20 @@ namespace NHS111.Business.Api.Controllers
                 var selected = _answersForNodeBuilder.SelectAnswer(answers, value);
                 return await GetNextNode(pathwayId, firstNode.Question.Id, JsonConvert.SerializeObject(stateDictionary), selected);
             }
-            return firstNodeJson.AsHttpResponse();
+            if (nextLabel == "Set")
+            {
+                var answers = JsonConvert.DeserializeObject<IEnumerable<Answer>>(await _questionService.GetAnswersForQuestion(firstNode.Question.Id));
+                stateDictionary.Add(firstNode.Question.Title, answers.First().Title);
+                var updatedState = JsonConvert.SerializeObject(stateDictionary);
+                return await GetNextNode(pathwayId, firstNode.Question.Id, updatedState, answers.First().Title);
+            }
+
+            if (firstNode.State == null)
+                firstNode.State = stateDictionary;
+            else
+                firstNode.State.Add("SYSTEM_ONLINE", "online");//turn on online question flows
+
+            return JsonConvert.SerializeObject(firstNode).AsHttpResponse();
         }
 
         [Route("node/{pathwayId}/jtbs_first")]

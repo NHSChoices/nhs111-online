@@ -1,0 +1,104 @@
+﻿@using NHS111.Models.Models.Domain
+@inherits NHS111.Web.Views.Shared.AgeValidationView<NHS111.Models.Models.Web.JourneyViewModel>
+
+<h1 class="heading-large gender-heading">Tell us about you, or the person you're asking about</h1>
+
+<fieldset>
+    <legend class="heading-small">
+        Sex
+    </legend>
+    <div id="answers">
+    
+        <label for="Male" class="answer answer-label">
+            <span class="answer-radio">
+                @Html.RadioButtonFor(m => m.UserInfo.Demography.Gender, GenderEnum.Male, new { @id = "Male" })
+            </span>
+            <span class="answer-text">Male</span>
+        </label>
+        <label for="Female" class="answer answer-label">
+            <span class="answer-radio">
+                @Html.RadioButtonFor(m => m.UserInfo.Demography.Gender, GenderEnum.Female, new { @id = "Female" })
+            </span>
+            <span class="answer-text">Female</span>
+        </label>
+    </div>
+</fieldset>
+
+<div class="age-content">
+    <h2 class="heading-small">@Html.LabelFor(m => m.UserInfo.Demography.Age, "Age in years")</h2>
+    <div>
+        @Html.ValidationMessageFor(m => m.UserInfo.Demography.Age)
+    </div>
+    <div class="age">
+        <span id="errmsg"></span>
+        @Html.TextBoxFor(m => m.UserInfo.Demography.Age, new {@class = "form-control input-age", type = "number", size = 3, maxlength = 3})
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    // copyright 1999 Idocs, Inc. http://www.idocs.com
+    // Distribute this script freely but keep this notice in place
+    function numbersonly(myfield, e, dec) {
+        var key;
+        var keychar;
+
+        if (window.event)
+            key = window.event.keyCode;
+        else if (e)
+            key = e.which;
+        else
+            return true;
+        keychar = String.fromCharCode(key);
+
+        // control keys
+        if ((key == null) || (key == 0) || (key == 8) ||
+        (key == 9) || (key == 13) || (key == 27))
+            return true;
+// numbers
+        else if ((("0123456789").indexOf(keychar) > -1))
+            return true;
+// decimal point jump
+        else if (dec && (keychar == ".")) {
+            myfield.form.elements[dec].focus();
+            return false;
+        } else
+            return false;
+    }
+
+    $(document).ready(function () {
+        $('.help-text-link-message').hide();
+        $('.help-text-link').click(function () {
+            var $this = $(this);
+            //$this.preventDefault();
+
+            var $helpTextLinkMessage = $this.parent().parent().next('.help-text-link-message');
+            $helpTextLinkMessage.slideToggle("fast");
+            return false;
+        });
+    });
+
+</script>
+
+@if (FilterPathwaysByAgeFeature.IsEnabled)
+{
+    <script type="text/javascript">
+
+        jQuery.validator.addMethod('age',
+            function(value, element, params) {
+                return numbersonly(element, event) && parseInt(value) >= 5;
+            });
+
+        jQuery.validator.unobtrusive.adapters.add('age',
+            ['prefixelement'],
+            function(options) {
+                options.rules['age'] = options.params;
+                if (options.message != null) {
+                    options.messages['age'] = options.message;
+                }
+            });
+
+    </script>
+}

@@ -25,6 +25,8 @@
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>4b57151a</NuGetPackageImportStamp>
     <UseGlobalApplicationHostFile />
+    <ApplicationInsightsResourceId>/subscriptions/66bf9d39-b598-433d-9273-0c27e559f37f/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/NHS111.Web</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/66bf9d39-b598-433d-9273-0c27e559f37f/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/NHS111.Web</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,16 +53,80 @@
     <Reference Include="Devbridge.BasicAuthentication">
       <HintPath>..\lib\Devbridge.BasicAuthentication\Devbridge.BasicAuthentication.dll</HintPath>
     </Reference>
+    <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.2.1.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.MVC5.6.2.1.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.DependencyCollector, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.2.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.2.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.2.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.Web, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.2.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.2.2.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.2.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=7.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.7.2.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NHS111.IoC, Version=1.0.0.26, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NHS111.IoC.1.0.0.26\lib\net451\NHS111.IoC.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NHS111.IoC, Version=1.0.0.30, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NHS111.IoC.1.0.0.30\lib\net451\NHS111.IoC.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net451\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=4.0.1.318, Culture=neutral, processorArchitecture=MSIL">
@@ -83,12 +149,20 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Spatial, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.6.4\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
@@ -97,8 +171,28 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Optimization">
       <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.0\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
@@ -117,30 +211,6 @@
     </Reference>
     <Reference Include="System.Net.Http.WebRequest">
     </Reference>
-    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.0.0\lib\net45\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-    </Reference>
     <Reference Include="WebActivatorEx">
       <HintPath>..\packages\WebActivatorEx.2.0.5\lib\net40\WebActivatorEx.dll</HintPath>
     </Reference>
@@ -158,6 +228,7 @@
     <Folder Include="Content\styles\mobile\" />
     <Folder Include="Content\styles\print\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Auditing\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -165,24 +236,32 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Authentication\BasicAuthenticationModule.cs" />
+    <Compile Include="Controllers\AuditingController.cs" />
     <Compile Include="Controllers\DOSController.cs" />
     <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\OutcomeController.cs" />
+    <Compile Include="Controllers\PostcodeFirstController.cs" />
     <Compile Include="Controllers\QuestionController.cs" />
     <Compile Include="Controllers\JustToBeSafeController.cs" />
+    <Compile Include="Controllers\TopicController.cs" />
+    <Compile Include="ErrorHandler\AiHandleErrorAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Versioning.cs" />
+    <Compile Include="Helpers\ViewDeterminer.cs" />
     <Compile Include="IoC\WebRegistry.cs" />
     <Compile Include="IoC\IoC.cs" />
     <Compile Include="IoC\StructuremapMvc.cs" />
     <Compile Include="IoC\StructureMapScopeModule.cs" />
     <Compile Include="IoC\StructuremapWebApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\Shared\AgeValidationView.cs" />
     <Compile Include="Views\Shared\DirectLinkingView.cs" />
-    <Compile Include="Views\Shared\DisclaimerView.cs" />
+    <Compile Include="Views\Shared\DisclaimerPopupView.cs" />
     <Compile Include="Views\Shared\LayoutView.cs" />
+    <Compile Include="Views\Shared\SurveyLinkView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\custom.css" />
@@ -225,8 +304,11 @@
     <Content Include="Content\css\skins\flat\yellow.css" />
     <Content Include="Content\css\skins\flat\yellow.png" />
     <Content Include="Content\css\skins\flat\_all.css" />
-    <Content Include="Content\css_NhsUK\a-and-e.css" />
-    <Content Include="Content\css_NhsUK\application-ie8.css" />
+    <Content Include="Content\css_NhsUK\govuk-template.css" />
+    <Content Include="Content\css_NhsUK\home.css" />
+    <Content Include="Content\css_NhsUK\loading-indicator.css" />
+    <Content Include="Content\css_NhsUK\signposting-outcome-print.css" />
+    <Content Include="Content\css_NhsUK\signposting-outcome.css" />
     <Content Include="Content\css_NhsUK\application.css" />
     <Content Include="Content\css_NhsUK\banner.css" />
     <Content Include="Content\css_NhsUK\confirmation.css" />
@@ -242,6 +324,7 @@
     <Content Include="Content\css_NhsUK\servicelist.css" />
     <Content Include="Content\css_NhsUK\slider.css" />
     <Content Include="Content\css_NhsUK\service.css" />
+    <Content Include="Content\css_NhsUK\help.css" />
     <Content Include="Content\images\999-Body-Image.png" />
     <Content Include="Content\images\bg\999Banner.png" />
     <Content Include="Content\images\bg\activeSurgery.png" />
@@ -260,22 +343,44 @@
     <Content Include="Content\images\bg\sliderH3.png" />
     <Content Include="Content\images\bg\telephone.png" />
     <Content Include="Content\images\bg\website.png" />
+    <Content Include="Content\images\blue-arrow-down.png" />
+    <Content Include="Content\images\blue-arrow-right.png" />
     <Content Include="Content\images\headacheBanner.png" />
     <Content Include="Content\images\homeBanner.png" />
+    <Content Include="Content\images\icon-button-next-black.png" />
+    <Content Include="Content\images\icon-button-prev.png" />
     <Content Include="Content\images\icons\blueArrow.png" />
     <Content Include="Content\images\icons\breadcrumbOne.png" />
     <Content Include="Content\images\icons\breadcrumbTwo.png" />
     <Content Include="Content\images\icons\hospital.png" />
     <Content Include="Content\images\icons\icon-button-next.svg" />
     <Content Include="Content\images\icons\icon-button-prev.svg" />
+    <Content Include="Content\images\icons\icon-link-back.png" />
     <Content Include="Content\images\icons\icon-link-go.png" />
     <Content Include="Content\images\icons\icon_info.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-1.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-10.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-2.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-3.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-4.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-5.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-6.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-7.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-8.png" />
+    <Content Include="Content\images\icons\map-pointers\fac-map-9.png" />
     <Content Include="Content\images\icons\outcomeHeader.png" />
     <Content Include="Content\images\icons\redArrow.png" />
     <Content Include="Content\images\icons\redDownArrow.png" />
+    <Content Include="Content\images\icons\warning-blue.png" />
+    <Content Include="Content\images\icons\warning-white.png" />
+    <Content Include="Content\images\icons\warning.png" />
     <Content Include="Content\images\nhs-logo.png" />
     <Content Include="Content\images\nhs-rev-logotype.jpg" />
     <Content Include="Content\images\nhs-rev-logotype.svg" />
+    <Content Include="Content\images\step-1.png" />
+    <Content Include="Content\images\step-2.png" />
+    <Content Include="Content\images\step-3.png" />
+    <Content Include="Content\images\warning-blue.png" />
     <Content Include="Content\img\ambulance-in-map.png" />
     <Content Include="Content\img\ambulance.png" />
     <Content Include="Content\img\arrowActive_left.png" />
@@ -320,6 +425,7 @@
     <Content Include="Content\img\bg\whiteLinkArrow.png" />
     <Content Include="Content\img\book-appointment.png" />
     <Content Include="Content\img\bubbleArrow.png" />
+    <Content Include="Content\img\call_999.png" />
     <Content Include="Content\img\case_image.png" />
     <Content Include="Content\img\close.jpg" />
     <Content Include="Content\img\close.png" />
@@ -374,6 +480,8 @@
     <Content Include="Content\img\white-home.jpg" />
     <Content Include="Content\img\white-Tel.jpg" />
     <Content Include="Content\img\white-website.jpg" />
+    <Content Include="Content\img\worsening-fail.png" />
+    <Content Include="Content\img\worsening.png" />
     <Content Include="Content\Js\site.js" />
     <Content Include="Content\Js\vendor\html5shiv-printshiv.js" />
     <Content Include="Content\Js\vendor\html5shiv.js" />
@@ -400,6 +508,7 @@
     <Content Include="Content\_assets\css\main.css" />
     <Content Include="Content\_assets\img\bg-pattern.png" />
     <Content Include="Content\_assets\img\countdownbg-ie8.png" />
+    <Content Include="Content\_assets\img\exclamation_blue.png" />
     <Content Include="Content\_assets\img\favicon.ico" />
     <Content Include="Content\_assets\img\icon-address.png" />
     <Content Include="Content\_assets\img\icon-blue-search.png" />
@@ -488,6 +597,7 @@
     <Content Include="Scripts\custom.js" />
     <Content Include="Scripts\disclaimer-popup.js" />
     <Content Include="Scripts\disclaimer.js" />
+    <Content Include="Scripts\geotools.js" />
     <Content Include="Scripts\icheck.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
     <Content Include="Scripts\jquery.cookie.js" />
@@ -540,6 +650,10 @@
     <Content Include="Content\fonts\NTATabularNumbers-Bold.woff" />
     <Content Include="Content\fonts\NTATabularNumbers-Light.eot" />
     <Content Include="Content\fonts\NTATabularNumbers-Light.woff" />
+    <ProjectReference Include="..\NHS111.Features\NHS111.Features.csproj">
+      <Project>{BD9F2634-BADA-43E6-B16D-522BE17DA255}</Project>
+      <Name>NHS111.Features</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHS111.Models\NHS111.Models.csproj">
       <Project>{4ccf3abd-92c4-4999-8520-c4aa7b36f48c}</Project>
       <Name>NHS111.Models</Name>
@@ -555,9 +669,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Question\Gender.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\_Old\Home.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\JustToBeSafe\JustToBeSafe.cshtml" />
@@ -624,16 +735,13 @@
     <Content Include="Content\_assets\scss\_modules.scss" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\_Old\GPSearch.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Outcome\Call_999.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\_Old\DosService.cshtml" />
+    <Content Include="Views\DOS\Confirmation.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\DOS\Confirmation.cshtml" />
+    <Content Include="Views\Outcome\ITK_Clinician_call_back.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_SurgeryDetails.cshtml" />
@@ -642,16 +750,10 @@
     <Content Include="Views\Shared\_LayoutOutcome.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_PostCodeSearch.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Shared\_AreYouAtHome.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_AddressDetails.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\_Old\DOService.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_GpSearch.cshtml" />
@@ -660,19 +762,15 @@
     <Content Include="Views\DOS\DosResults.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\_Old\_SurgeryDetails.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\_Old\Confirmation.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Shared\_GoogleMap.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Outcome\SP_Accident_and_emergency.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Question\Home.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\_Old\Emergency.cshtml" />
     <Content Include="Views\Shared\_CommonHiddenFieldsJourneyViewModel.cshtml" />
     <Content Include="Views\Shared\_CommonHiddenFieldsOutcomeViewModel.cshtml" />
     <Content Include="Views\Shared\_PersonalPostCodeSearch.cshtml" />
@@ -681,25 +779,66 @@
     <Content Include="Views\Outcome\PersonalDetails.cshtml" />
     <Content Include="Views\Shared\_SelectedService.cshtml" />
     <Content Include="Views\Shared\_CommonHiddenFieldsDosViewModel.cshtml" />
-    <Content Include="Views\Shared\_CommonHiddenFieldsHomeAddressInfo.cshtml" />
+    <Content Include="Views\Shared\_CommonHiddenFieldsAddressInfoViewModel.cshtml" />
     <Content Include="Views\Outcome\Confirmation.cshtml" />
     <Content Include="Views\Outcome\ServiceDetails.cshtml" />
     <Content Include="Views\Outcome\ServiceList.cshtml" />
     <Content Include="Views\Outcome\ServiceBookingFailure.cshtml" />
-    <Content Include="Views\Question\DeadEndJump.cshtml" />
+    <Content Include="Views\Outcome\DeadEndJump.cshtml" />
     <Content Include="Views\Shared\_CareAdvice.cshtml" />
     <Content Include="Views\Outcome\Home_Care.cshtml" />
     <Content Include="Views\Help\Cookies.cshtml" />
     <Content Include="Views\Shared\_CookieBanner.cshtml" />
     <Content Include="Views\Shared\_DisclaimerBanner.cshtml" />
     <Content Include="Views\Help\Privacy.cshtml" />
-    <Content Include="Views\Shared\_AlphaFeedback.cshtml" />
-    <Content Include="Views\Shared\_SessionId.cshtml" />
     <Content Include="Views\Help\Browsers.cshtml" />
-    <Content Include="Views\Outcome\Dead_End_Disposition.cshtml" />
-    <Content Include="Views\Outcome\SP_Disposition.cshtml" />
-    <Content Include="Views\Outcome\ITK_Disposition.cshtml" />
-    <None Include="Properties\PublishProfiles\nhs111-web-beta__alpha.pubxml" />
+    <Content Include="Views\Outcome\SP_GP.cshtml" />
+    <Content Include="Views\Outcome\SP_Other.cshtml" />
+    <Content Include="Views\Shared\_FindService.cshtml" />
+    <Content Include="Views\Shared\_OutcomeHeader.cshtml" />
+    <Content Include="Views\Outcome\SP_Pharmacy.cshtml" />
+    <Content Include="Views\Shared\_SaveOutcomeLink.cshtml" />
+    <Content Include="Views\Shared\_SaveOutcomeDialogue.cshtml" />
+    <Content Include="Views\Outcome\SP_Optician.cshtml" />
+    <Content Include="Views\Outcome\SP_GUM_Clinic.cshtml" />
+    <Content Include="Views\Outcome\SP_Accident_and_emergency_sexual_assault.cshtml" />
+    <Content Include="Views\Outcome\SP_Emergency_dental.cshtml" />
+    <Content Include="Views\Shared\_WorseningAdvice.cshtml" />
+    <Content Include="Views\Outcome\SP_Dental.cshtml" />
+    <Content Include="Views\Question\InitialQuestion.cshtml" />
+    <Content Include="Views\Outcome\Call_999_police.cshtml" />
+    <Content Include="Views\Outcome\ITK_Primary_care.cshtml" />
+    <Content Include="Views\Outcome\SP_Midwife.cshtml" />
+    <Content Include="Views\Outcome\Call_999_Assess.cshtml" />
+    <Content Include="Views\Question\InlineCareAdvice.cshtml" />
+    <Content Include="Views\Shared\_CommonHiddenFieldsNode.cshtml" />
+    <Content Include="Views\Shared\_GenderAgeView.cshtml" />
+    <Content Include="leeds-postcodes.csv" />
+    <Content Include="Views\Shared\_CommonHiddenFieldsCareAdviceViewModel.cshtml" />
+    <Content Include="Views\Outcome\PathwaySelectionJump.cshtml" />
+    <Content Include="Views\Help\Terms.cshtml" />
+    <Content Include="Views\Shared\_SurveyLink.cshtml" />
+    <Content Include="Views\Topic\Search.cshtml" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="Views\Shared\_PageLoadingIndicator.cshtml" />
+    <Content Include="Views\PostcodeFirst\Postcode.cshtml" />
+    <Content Include="Views\Shared\_AlternativeServices.cshtml" />
+    <Content Include="Views\Shared\_PersonalDetailsSelf.cshtml" />
+    <Content Include="Views\Shared\_InformantDetails.cshtml" />
+    <Content Include="Views\Outcome\ServiceBookingUnavailable.cshtml" />
+    <Content Include="Views\Outcome\DuplicateBookingFailure.cshtml" />
+    <Content Include="Views\Shared\_CallbackServices.cshtml" />
+    <Content Include="Views\Shared\_GotoServices.cshtml" />
+    <Content Include="Views\PostcodeFirst\SP_Dental\Outcome.cshtml" />
+    <Content Include="Views\PostcodeFirst\ITK_Primary_care\Outcome.cshtml" />
+    <Content Include="Views\PostcodeFirst\ITK_Primary_care\Services.cshtml" />
+    <Content Include="Views\PostcodeFirst\SP_Dental\Services.cshtml" />
+    <Content Include="Views\Shared\_PublicPhoneServices.cshtml" />
+    <Content Include="Views\Shared\_OutcomeHeaderTwoTitles.cshtml" />
+    <Content Include="Views\Shared\_WorseningAdviceWithTitle.cshtml" />
     <None Include="Web.Development.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -709,6 +848,9 @@
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -1,10 +1,11 @@
 ﻿var content =
-    '<div id="disclaimerModal" class="disclaimerModal modal fade" tabindex="-1" role="dialog" aria-labelledby="alphaWelcome" aria-hidden="true"> \
+    '<link href="~/Content/css_NhsUK/phase-banner.css" media="screen" rel="stylesheet" type="text/css" /> \
+    <div id="disclaimerModal" class="disclaimerModal modal fade" tabindex="-1" role="dialog" aria-labelledby="alphaWelcome" aria-hidden="true"> \
         <div class="modal-dialog"> \
             <div class="modal-content"> \
                 <div class="modal-header"> \
                     <h4 class="modal-title" id="alphaWelcome"> \
-                         <img src="/content/images/nhs-rev-logotype.jpg" alt=""> \
+                            <img src="/content/images/nhs-rev-logotype.jpg" alt=""> \
                         <span style="vertical-align:middle;">111 Online</span> \
                     </h4> \
                 </div> \
@@ -34,15 +35,6 @@
 
 $(function () {
     $("body").append(content);
-    var sessionId = $.cookie("sessionId");
-    $('#disclaimerModal').on('shown.bs.modal', function () {
-        $.ajax({
-            url: 'Question/Audit',
-            type: "post",
-            dataType: "json",
-            data: { msg: "SESSIONID: " + sessionId + " : Disclaimer message shown" }
-        });
-    });
     $('#disclaimerModal').modal(
         {
             backdrop: 'static',
@@ -50,11 +42,5 @@ $(function () {
         });
     $('#acceptDisclaimer').click(function () {
         $('.disclaimer.alert').hide();
-        $.ajax({
-            url: 'Question/Audit',
-            type: "post",
-            dataType: "json",
-            data: { msg: "SESSIONID: " + sessionId + " : Disclaimer message accepted" }
-        });
     });
 });

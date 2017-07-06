@@ -19,13 +19,15 @@ namespace NHS111.Web.Presentation.Builders
         private readonly IMappingEngine _mappingEngine;
         private readonly IRestfulHelper _restfulHelper;
         private readonly IKeywordCollector _keywordCollector;
+        private readonly IUserZoomDataBuilder _userZoomDataBuilder;
 
-        public JustToBeSafeFirstViewModelBuilder(IRestfulHelper restfulHelper, IConfiguration configuration, IMappingEngine mappingEngine, IKeywordCollector keywordCollector)
+        public JustToBeSafeFirstViewModelBuilder(IRestfulHelper restfulHelper, IConfiguration configuration, IMappingEngine mappingEngine, IKeywordCollector keywordCollector, IUserZoomDataBuilder userZoomDataBuilder)
         {
             _restfulHelper = restfulHelper;
             _configuration = configuration;
             _mappingEngine = mappingEngine;
             _keywordCollector = keywordCollector;
+            _userZoomDataBuilder = userZoomDataBuilder;
         }
 
         public async Task<Tuple<string, JourneyViewModel>> JustToBeSafeFirstBuilder(JustToBeSafeViewModel model) {
@@ -43,23 +45,30 @@ namespace NHS111.Web.Presentation.Builders
                     PathwayId = identifiedModel.PathwayId,
                     PathwayNo = identifiedModel.PathwayNo,
                     PathwayTitle = identifiedModel.PathwayTitle,
+                    DigitalTitle = string.IsNullOrEmpty(identifiedModel.DigitalTitle) ? identifiedModel.PathwayTitle : identifiedModel.DigitalTitle,
                     UserInfo = identifiedModel.UserInfo,
-                    SessionId = identifiedModel.SessionId,
                     JourneyJson = identifiedModel.JourneyJson,
                     State = JsonConvert.DeserializeObject<Dictionary<string, string>>(identifiedModel.StateJson),
                     StateJson = identifiedModel.StateJson,
                     CollectedKeywords = identifiedModel.CollectedKeywords,
-                    Journey = JsonConvert.DeserializeObject<Journey>(identifiedModel.JourneyJson)
-               
+                    Journey = JsonConvert.DeserializeObject<Journey>(identifiedModel.JourneyJson),
+                    SessionId = model.SessionId,
+                    JourneyId = Guid.NewGuid(),
+                    FilterServices = model.FilterServices
                 };
                 var question = JsonConvert.DeserializeObject<QuestionWithAnswers>(await _restfulHelper.GetAsync(_configuration.GetBusinessApiFirstQuestionUrl(identifiedModel.PathwayId, identifiedModel.StateJson)));
                 _mappingEngine.Mapper.Map(question, journeyViewModel);
+
+                _userZoomDataBuilder.SetFieldsForQuestion(journeyViewModel);
+
                 return new Tuple<string, JourneyViewModel>("../Question/Question", journeyViewModel);
             }
             identifiedModel.Part = 1;
+            identifiedModel.JourneyId = Guid.NewGuid();
             identifiedModel.Questions = questionsWithAnswers;
             identifiedModel.QuestionsJson = questionsJson;
             identifiedModel.JourneyJson = string.IsNullOrEmpty(identifiedModel.JourneyJson) ? JsonConvert.SerializeObject(new Journey()) : identifiedModel.JourneyJson;
+            identifiedModel.FilterServices = model.FilterServices;
             return new Tuple<string, JourneyViewModel>("../JustToBeSafe/JustToBeSafe", identifiedModel);
 
         }
@@ -70,16 +79,19 @@ namespace NHS111.Web.Presentation.Builders
             var pathway = JsonConvert.DeserializeObject<Pathway>(response);
             if (pathway == null) return null;
 
-            var derivedAge = model.UserInfo.Age == -1 ? pathway.MinimumAgeInclusive : model.UserInfo.Age;
+            var derivedAge = model.UserInfo.Demography.Age == -1 ? pathway.MinimumAgeInclusive : model.UserInfo.Demography.Age;
             var newModel = new JustToBeSafeViewModel
             {
                 PathwayId = pathway.Id,
                 PathwayNo = pathway.PathwayNo,
                 PathwayTitle = pathway.Title,
-                UserInfo = new UserInfo() { Age = derivedAge, Gender = pathway.Gender },
+                DigitalTitle = string.IsNullOrEmpty(model.DigitalTitle) ? pathway.Title : model.DigitalTitle,
+                UserInfo = new UserInfo { Demography = new AgeGenderViewModel { Age = derivedAge, Gender = pathway.Gender } },
                 JourneyJson = model.JourneyJson,
-                SymptomDiscriminator = model.SymptomDiscriminator,
+                SymptomDiscriminatorCode = model.SymptomDiscriminatorCode,
                 State = JourneyViewModelStateBuilder.BuildState(pathway.Gender, derivedAge),
+                SessionId = model.SessionId,
+                FilterServices = model.FilterServices
             };
 
             newModel.StateJson = JourneyViewModelStateBuilder.BuildStateJson(newModel.State);
@@ -89,14 +101,14 @@ namespace NHS111.Web.Presentation.Builders
 
         private async Task<JustToBeSafeViewModel> BuildIdentifiedModel(JustToBeSafeViewModel model)
         {
-            var pathway = JsonConvert.DeserializeObject<Pathway>(await _restfulHelper.GetAsync(_configuration.GetBusinessApiPathwayIdUrl(model.PathwayNo, model.UserInfo.Gender, model.UserInfo.Age)));
+            var pathway = JsonConvert.DeserializeObject<Pathway>(await _restfulHelper.GetAsync(_configuration.GetBusinessApiPathwayIdUrl(model.PathwayNo, model.UserInfo.Demography.Gender, model.UserInfo.Demography.Age)));
 
             if (pathway == null) return null;
 
             model.PathwayId = pathway.Id;
             model.PathwayTitle = pathway.Title;
             model.PathwayNo = pathway.PathwayNo;
-            model.State = JourneyViewModelStateBuilder.BuildState(model.UserInfo.Gender,model.UserInfo.Age, model.State);
+            model.State = JourneyViewModelStateBuilder.BuildState(model.UserInfo.Demography.Gender,model.UserInfo.Demography.Age, model.State);
             model.StateJson = JourneyViewModelStateBuilder.BuildStateJson(model.State);
             model.CollectedKeywords = new KeywordBag(_keywordCollector.ParseKeywords(pathway.Keywords, false).ToList(), _keywordCollector.ParseKeywords(pathway.ExcludeKeywords, false).ToList());
             return model;

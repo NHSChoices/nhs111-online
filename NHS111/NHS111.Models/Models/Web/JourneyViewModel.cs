@@ -10,13 +10,18 @@ using NHS111.Models.Models.Web.FromExternalServices;
 
 namespace NHS111.Models.Models.Web
 {
+    using System.Collections;
+
     public class JourneyViewModel
     {
         public Guid SessionId { get; set; }
+        public Guid JourneyId { get; set; }
         public string PathwayId { get; set; }
         public string PathwayNo { get; set; }
         public string PathwayTitle { get; set; }
+        public string DigitalTitle { get; set; }
         public string Id { get; set; }
+        public string EntrySearchTerm { get; set; }
 
         private string _title;
         public string Title
@@ -28,7 +33,8 @@ namespace NHS111.Models.Models.Web
         public List<string> Bullets { get; set; }
 
         public string Rationale { get; set; }
-        public string RationaleHtml {
+        public string RationaleHtml
+        {
             get { return StaticTextToHtml.Convert(Rationale); }
         }
 
@@ -41,44 +47,103 @@ namespace NHS111.Models.Models.Web
 
         public UserInfo UserInfo { get; set; }
 
-        public bool IsFirstStep {
-            get {
+        public bool IsFirstStep
+        {
+            get
+            {
                 if (string.IsNullOrEmpty(JourneyJson))
                     return false;
                 return !JsonConvert.DeserializeObject<Journey>(JourneyJson).Steps.Any();
             }
         }
 
-        public string PreviousStateJson { get; set; }
+        public IEnumerable<Pathway> CommonTopics { get; set; }
+
         public string QuestionNo { get; set; }
-        public string SymptomDiscriminator { get; set; }
+        public string SymptomDiscriminatorCode { get; set; }
         public IDictionary<string, string> State { get; set; }
         public string StateJson { get; set; }
         public KeywordBag CollectedKeywords { get; set; }
         public string TimeFrameText { get; set; }
         public OutcomeGroup OutcomeGroup { get; set; }
+        public string WaitTimeText { get; set; }
+        public DateTime DispositionTime { get; set; }
+        public string DispositionUrgencyText { get; set; }
 
-        public string StepLink {
-            get {
-                var age = UserInfo != null ? UserInfo.Age : 0;
+        public string DispositionUrgencyTitle
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(OutcomeGroup.Text))
+                    return string.Empty;
+                // convert to char array of the string
+                char[] outcomeGroupArray = OutcomeGroup.Text.ToCharArray();
+                // upper case the first char
+                outcomeGroupArray[0] = char.ToUpper(outcomeGroupArray[0]);
+                // return the array made of the new char array
+                var outcomeGroupText = new string(outcomeGroupArray);
+
+                return string.Format("{0} {1}", outcomeGroupText, DispositionUrgencyText);
+            }
+        }
+
+        public int TimeFrameMinutes { get; set; }
+
+        private bool _displayOutcomeReferenceOnly = false;
+        public bool DisplayOutcomeReferenceOnly
+        {
+
+            get { return _displayOutcomeReferenceOnly; }
+            set { _displayOutcomeReferenceOnly = value; }
+        }
+
+        public string StepLink
+        {
+            get
+            {
+                var age = UserInfo != null ? UserInfo.Demography.Age : 0;
                 return string.Format("/question/direct/{0}/{1}/{2}/?answers={3}", PathwayId, age, PathwayTitle,
                     string.Join(",", GetPreviousAnswers()));
             }
         }
 
-        private IEnumerable<int> GetPreviousAnswers() {
+        public string OutcomeDetailLink
+        {
+            get
+            {
+                var age = UserInfo != null ? UserInfo.Demography.Age : 0;
+                return string.Format("/question/outcomedetail/{0}/{1}/{2}/?answers={3}", PathwayId, age, PathwayTitle,
+                    string.Join(",", GetPreviousAnswers()));
+            }
+        }
+
+        public IEnumerable<string> PathwayNumbers { get; set; }
+        public IEnumerable<CareAdvice> InlineCareAdvice { get; set; }
+        public bool FilterServices { get; set; }
+
+        private IEnumerable<int> GetPreviousAnswers()
+        {
+            if (Journey == null)
+                return new List<int>();
             return Journey.Steps.Select(step => step.Answer.Order - 1);
         }
 
-        public JourneyStep ToStep() {
+        public JourneyStep ToStep()
+        {
             var answer = JsonConvert.DeserializeObject<Answer>(SelectedAnswer);
-            return new JourneyStep {
+            return new JourneyStep
+            {
                 QuestionNo = QuestionNo,
                 QuestionTitle = Title,
                 Answer = answer,
-                QuestionId = Id
+                QuestionId = Id,
+                State = StateJson
             };
         }
+
+        public string UserZoomTitle { get; set; }
+        public string UserZoomUrl { get; set; }
+        
 
         public JourneyViewModel()
         {
@@ -86,26 +151,26 @@ namespace NHS111.Models.Models.Web
             JourneyJson = JsonConvert.SerializeObject(new Journey());
             Bullets = new List<string>();
             State = new Dictionary<string, string>();
-            SymptomDiscriminator = String.Empty;
+            SymptomDiscriminatorCode = String.Empty;
             CollectedKeywords = new KeywordBag();
 
         }
 
         public List<Answer> OrderedAnswers()
         {
-            return Answers.OrderBy(x=>x.Order).ToList();
+            return Answers.OrderBy(x => x.Order).ToList();
         }
 
-        public void ProgressState() {
-            PreviousStateJson = StateJson;
+        public void ProgressState()
+        {
             State = JsonConvert.DeserializeObject<Dictionary<string, string>>(StateJson);
         }
 
 
-        public void RemoveLastStep() {
+        public void RemoveLastStep()
+        {
+            StateJson = Journey.GetLastState();
             Journey.RemoveLastStep();
-
-            StateJson = PreviousStateJson;
             JourneyJson = JsonConvert.SerializeObject(Journey);
             State = JsonConvert.DeserializeObject<Dictionary<string, string>>(StateJson);
         }

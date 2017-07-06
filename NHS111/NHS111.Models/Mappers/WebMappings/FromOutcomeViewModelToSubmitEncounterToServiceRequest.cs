@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using CsvHelper.TypeConversion;
 using NHS111.Models.Models.Web;
+using NHS111.Models.Models.Web.FromExternalServices;
 using NHS111.Models.Models.Web.ITK;
+using ServiceDetails = NHS111.Models.Models.Web.ITK.ServiceDetails;
 
 namespace NHS111.Models.Mappers.WebMappings
 {
@@ -22,6 +25,9 @@ namespace NHS111.Models.Mappers.WebMappings
             Mapper.CreateMap<OutcomeViewModel, ServiceDetails>()
                 .ConvertUsing<FromOutcomeViewModelToServiceDetailsConverter>();
 
+            Mapper.CreateMap<List<JourneyStep>, List<String>>()
+              .ConvertUsing<FromJourneySetpsToReportTextStrings>();
+
         }
     }
 
@@ -32,11 +38,22 @@ namespace NHS111.Models.Mappers.WebMappings
             var outcome = (OutcomeViewModel)context.SourceValue;
             var caseDetails = (CaseDetails)context.DestinationValue ?? new CaseDetails();
 
-            caseDetails.ExternalReference = outcome.SessionId.ToString();
+            caseDetails.ExternalReference = outcome.JourneyId.ToString();
             caseDetails.DispositionCode = outcome.Id;
             caseDetails.DispositionName = outcome.Title;
-
+            caseDetails.Source = outcome.PathwayTitle;
+            caseDetails.ReportItems = Mapper.Map<List<JourneyStep>, List<string>>(outcome.Journey.Steps);
+            caseDetails.ConsultationSummaryItems = outcome.Journey.Steps.Where(s => !string.IsNullOrEmpty(s.Answer.DispositionDisplayText)).Select(s => s.Answer.ReportText).Distinct().ToList();
             return caseDetails;
+        }
+    }
+
+    public class FromJourneySetpsToReportTextStrings : ITypeConverter<List<JourneyStep>, List<string>>
+    {
+        public List<string> Convert(ResolutionContext context)
+        {
+            var steps = (List<JourneyStep>)context.SourceValue;
+            return steps.Where(s => !string.IsNullOrEmpty(s.Answer.ReportText)).Select(s => s.Answer.ReportText).ToList();
         }
     }
 
@@ -44,31 +61,39 @@ namespace NHS111.Models.Mappers.WebMappings
     {
         public PatientDetails Convert(ResolutionContext context)
         {
-            var outcome = (OutcomeViewModel) context.SourceValue;
-            var patientDetails = (PatientDetails) context.DestinationValue ?? new PatientDetails();
+            var outcome = (OutcomeViewModel)context.SourceValue;
+            var patientDetails = (PatientDetails)context.DestinationValue ?? new PatientDetails();
 
             patientDetails.Forename = outcome.UserInfo.FirstName;
             patientDetails.Surname = outcome.UserInfo.LastName;
-            patientDetails.ServiceAddressPostcode = outcome.UserInfo.CurrentAddress.PostCode;
+            patientDetails.ServiceAddressPostcode = outcome.SelectedService.PostCode;
             patientDetails.TelephoneNumber = outcome.UserInfo.TelephoneNumber;
-            patientDetails.HomeAddress = new Address()
+            patientDetails.CurrentAddress = new Address()
             {
-                PostalCode =  string.IsNullOrEmpty(outcome.AddressSearchViewModel.PostCode) ? null: outcome.AddressSearchViewModel.PostCode,
+                PostalCode = string.IsNullOrEmpty(outcome.AddressInfoViewModel.Postcode) ? null : outcome.AddressInfoViewModel.Postcode,
                 StreetAddressLine1 =
-                    !string.IsNullOrEmpty(outcome.UserInfo.HomeAddress.HouseNumber)
-                        ? string.Format("{0} {1}", outcome.UserInfo.HomeAddress.HouseNumber, outcome.UserInfo.HomeAddress.AddressLine1)
-                        : outcome.UserInfo.HomeAddress.AddressLine1,
-                StreetAddressLine2 = outcome.UserInfo.HomeAddress.AddressLine2,
-                StreetAddressLine3 = outcome.UserInfo.HomeAddress.City,
-                StreetAddressLine4 = outcome.UserInfo.HomeAddress.County,
-                StreetAddressLine5 = outcome.UserInfo.HomeAddress.PostCode
+                    !string.IsNullOrEmpty(outcome.AddressInfoViewModel.HouseNumber)
+                        ? string.Format("{0} {1}", outcome.AddressInfoViewModel.HouseNumber, outcome.AddressInfoViewModel.AddressLine1)
+                        : outcome.AddressInfoViewModel.AddressLine1,
+                StreetAddressLine2 = outcome.AddressInfoViewModel.AddressLine2,
+                StreetAddressLine3 = outcome.AddressInfoViewModel.City,
+                StreetAddressLine4 = outcome.AddressInfoViewModel.County,
+                StreetAddressLine5 = outcome.AddressInfoViewModel.Postcode
             };
             if (outcome.UserInfo.Year != null && outcome.UserInfo.Month != null && outcome.UserInfo.Day != null)
                 patientDetails.DateOfBirth =
                     new DateTime(outcome.UserInfo.Year.Value, outcome.UserInfo.Month.Value, outcome.UserInfo.Day.Value);
-                
-            patientDetails.Gender = outcome.UserInfo.Gender;
-            if (outcome.UserInfo.CurrentAddress != null) patientDetails.CurrentLocationPostcode = outcome.UserInfo.CurrentAddress.PostCode;
+
+            patientDetails.Gender = outcome.UserInfo.Demography.Gender;
+            
+            patientDetails.Informant = new InformantDetails()
+            {
+                Forename = outcome.Informant.Forename,
+                Surname = outcome.Informant.Surname,
+                TelephoneNumber = outcome.UserInfo.TelephoneNumber,
+                Type = outcome.Informant.IsInformant ? InformantType.NotSpecified : InformantType.Self
+            };           
+            
             return patientDetails;
         }
     }

@@ -83,10 +83,6 @@ $(document).ready(function () {
 
 
     // enable click when the following occurs
-    //$("form").keyup(function () { 
-    //    $("button[type=submit]").removeAttr('disabled');
-    //    $("input[type=submit]").removeAttr('disabled');
-    //});
     $("input.radio").click(function () {
         $("button[type=submit]").removeAttr('disabled');
         $("input[type=submit]").removeAttr('disabled');
@@ -101,90 +97,6 @@ $(document).ready(function () {
         $("button[type=submit]").removeAttr('disabled');
         $("input[type=submit]").removeAttr('disabled');
     });
-
-    $("#gender .range-handle").click(function () {
-        $("button[type=submit]").removeAttr('disabled');
-        $("input[type=submit]").removeAttr('disabled');
-    });
-
-    $("#timedQuestion label").click(function () {
-        $("button[type=submit]").removeAttr('disabled');
-        $("input[type=submit]").removeAttr('disabled');
-    });
-
-    // Gender page scripts
-    function isAgeValid() {
-        return ($(".input-age").val().length > 0);
-    }
-
-    function isGenderSelected() {
-        if ($("#Male").is(":checked") || $("#Female").is(":checked")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function genderEnableSubmit() {
-        $("button[type=submit]").removeAttr('disabled');
-        $("input[type=submit]").removeAttr('disabled');
-    }
-
-    function genderDisableSubmit() {
-        $("button[type=submit]").attr("disabled", "disabled");
-        $("input[type=submit]").attr("disabled", "disabled");
-    }
-
-    // check for numerics in input field & alert error
-    $(".input-age").keypress(function (e) {
-        //if the letter is not digit then display error and don't type anything
-        if (e.which !== 8 && e.which !== 0 && (e.which < 48 || e.which > 57)) {
-            //display error message
-            //$("#errmsg").html("Numbers only").show().fadeOut("slow");
-            return false;
-        }
-    });
-
-    $("#Male, #Female").change(function (e) {
-        if (isAgeValid() && isGenderSelected()) {
-            genderEnableSubmit();
-        }
-    });
-
-    $(".input-age").keyup(function (e) {
-        if (!isAgeValid()) {
-            genderDisableSubmit();
-        } else {
-            if (isGenderSelected()) {
-                genderEnableSubmit();
-            }
-        }
-    });
-
-    $("img.maleImage").click(function () {
-        $("img.femaleImage").attr("src", "/content/img/female.png");
-        $(this).attr("src", "/content/img/male_sel.png");
-        $("#Male").prop("checked", true);
-        $("#Female").prop("checked", false);
-
-
-        // age input transition
-        $(".age-content").removeClass("hide-age");
-        $(".input-age").focus();
-
-    });
-
-    $("img.femaleImage").click(function () {
-        $("img.maleImage").attr("src", "/content/img/male.png");
-        $(this).attr("src", "/content/img/female_sel.png");
-        $("#Female").prop("checked", true);
-        $("#Male").prop("checked", false);
-
-        // age input transition
-        $(".age-content").removeClass("hide-age");
-        $(".input-age").focus();
-    });
-
 
     // mobile scroll button scripts
     $(function () {

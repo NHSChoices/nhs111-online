@@ -7,30 +7,36 @@
 {
     display: inline;
     float: left;
-    margin: 30px 15px;
     cursor: pointer;
+    margin: 0 22px 0 15px;
 }
-.maleIcon {
-    
-}
-.female {
-    margin-left: 30px;
-}
-.age-content {
+.gender-content {
+    margin: 15px 0;
     
 }
 .age {
-    margin: 30px 0;
+    margin: 15px 0;
 }
 .input-age {
-    width: 50px;
+    width: 60px;
+    display: block;
+    height: 50px;
 }
-.hide-age {
-    display: none;
+input[type='checkbox'] {
+    display: inline;
+    width: 30px;
+    height: 30px;
+    margin: 10px 5px 10px 7px;
+    vertical-align: middle;
 }
-.femaleIcon {
-    margin-left: 30px;
+.question-rationale.white-bg {
+    background-color: #fff;
+    border-left: none;
+    margin: 0 0 20px 0;
 }
-.maleIcon {
-    margin-left: 30px;
+.no-padding {
+    padding: 0 !important;
+}
+.heading-large.gender-heading {
+    margin: 40px 0 30px 0;
 }

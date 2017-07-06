@@ -12,7 +12,6 @@ namespace NHS111.Web.Controllers
         private readonly IJustToBeSafeFirstViewModelBuilder _justToBeSafeFirstViewModelBuilder;
         private readonly IJustToBeSafeViewModelBuilder _justToBeSafeViewModelBuilder;
 
-
         public JustToBeSafeController(IJustToBeSafeFirstViewModelBuilder justToBeSafeFirstViewModelBuilder, IJustToBeSafeViewModelBuilder justToBeSafeViewModelBuilder)
         {
             _justToBeSafeFirstViewModelBuilder = justToBeSafeFirstViewModelBuilder;
@@ -32,6 +31,26 @@ namespace NHS111.Web.Controllers
             ModelState.Clear();
             var next = await _justToBeSafeViewModelBuilder.JustToBeSafeNextBuilder(model);
             return View(next.Item1, next.Item2);
+        }
+
+        [HttpGet]
+        [Route("{pathwayNumber}/{gender}/{age}/start")]
+        public async Task<ActionResult> PathwayStart(string pathwayNumber, string gender, int age, string digitalTitle, string entrySearchTerm, bool? filterServices) {
+
+            var model = new JustToBeSafeViewModel {
+                PathwayNo = pathwayNumber,
+                DigitalTitle = digitalTitle,
+                EntrySearchTerm = entrySearchTerm,
+                UserInfo = new UserInfo {
+                    Demography = new AgeGenderViewModel {
+                        Age = age,
+                        Gender = gender
+                    }
+                },
+                FilterServices = filterServices.HasValue ? filterServices.Value : true
+            };
+
+            return await JustToBeSafeFirst(model);
         }
     }
 }

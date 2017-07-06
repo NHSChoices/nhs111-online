@@ -33,8 +33,17 @@ namespace NHS111.Models.Models.Domain
         [JsonProperty(PropertyName = "rationale")]
         public string Rationale { get; set; }
 
-        [JsonProperty(PropertyName = "timeframeText")]
+        [JsonProperty(PropertyName = "timeFrameText")]
         public string TimeFrameText { get; set; }
+
+        [JsonProperty(PropertyName = "timeFrame")]
+        public int TimeFrame { get; set; }
+
+        [JsonProperty(PropertyName = "waitTimeText")]
+        public string WaitTimeText { get; set; }
+
+        [JsonProperty(PropertyName = "dispositionUrgencyText")]
+        public string DispositionUrgencyText { get; set; }
 
         public bool IsJustToBeSafe()
         {

@@ -1,61 +1,53 @@
 ﻿@using NHS111.Models.Models.Web
-@model OutcomeViewModel
+@inherits NHS111.Web.Views.Shared.SurveyLinkView<OutcomeViewModel>
 @{
     Layout = "~/Views/Shared/_LayoutNhsUk.cshtml";
 }
-<link href="~/content/css_NhsUk/disposition.css" media="screen" rel="stylesheet" type="text/css" />
-<link href="~/content/css_NhsUk/confirmation.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/content/css_NhsUk/disposition.css")" media="screen" rel="stylesheet" type="text/css" />
+<link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/content/css_NhsUk/confirmation.css")" media="screen" rel="stylesheet" type="text/css" />
 @section Title {
-
+    NHS 111 - Looking after yourself
 }
 
-@section Scripts {
+@section HeadTop {
+@{ var url = string.Format("/outcome/{0}/{1}/{2}/disposition/", Url.Encode(Model.PathwayNo), Url.Encode(Model.OutcomeGroup.Text), Url.Encode(Model.Id)); }
     <script>
         var pageId = '@Model.Id';
         dataLayer = [
         {
-            'virtualPageUrl': document.location.pathname + '/' + pageId,
+            'virtualPageUrl': '@url',
             'virtualPageTitle': '@Model.TitleWithoutBullets'
         }];
     </script>
 }
-
-@section OuterSection{
+@section SurveyBanner{
+    @Html.Partial("_SurveyLink", Model.SurveyLink)
 }
-
 @section FeedbackSection {
+    @if (!SurveyLinkFeature.IsEnabled)
+    {
+        @Html.Partial("_FeedbackDetails", new FeedbackViewModel() { UserId = Model.SessionId.ToString(), PageId = Model.Id });
+    }
+    else
+    {
+        @Html.Partial("_SurveyLink", Model.SurveyLink)
+    }
 }
 
-<link href="~/content/css_NhsUk/disposition.css" media="screen" rel="stylesheet" type="text/css" />
+@Html.Partial("_OutcomeHeader", Model, new ViewDataDictionary() { { "OutcomeHeader", "Based on your answers, you can look after yourself and don't need to see a healthcare professional" } })
 
-@Html.Partial("_SessionId", Model)
-
-<h2>This is a test service and you’ve reached the end of the questions.</h2>
-<p>
-    <strong>If you need medical advice visit <a href="http://www.nhs.uk">www.nhs.uk</a> or call 111</strong>
-</p>
-
-<div class="disposition-panel">
-    <p class="disposition-title">
-        If this was a real service we would have told you that you do not need to see a healthcare professional at this time and presented the advice below on how to look after yourself.
-    </p>
-
-    <div class="section-item last">
-        @if (Model.DisplayWorseningCareAdvice)
+@Html.Partial("_WorseningAdvice", Model)
+<section>
+    <div>
+        @if (Model.CareAdvices != null && Model.CareAdvices.Any())
         {
-            <h3 class="care-advice-section-header">
-                What if I feel worse?
-            </h3>
-
-            <div class="service-booking-message alert">
-                @foreach (var item in Model.WorseningCareAdvice.Items)
-                {
-                    <p>@item.Text</p>
-                }
-            </div>
+            @Html.Partial("_CareAdvice", Model.CareAdvices)
         }
-        @Html.Partial("_CareAdvice", Model.CareAdvices, new ViewDataDictionary { { "Title", "Advice to help you look after yourself" } })
+        else
+        {
+            <h2 class="no-careadvice">If you need more help with your problem, you can find further information on <a href="http://www.nhs.uk">NHS Choices</a>.
+            </h2>
+        }
     </div>
+</section>
 
-    @Html.Partial("_AlphaFeedback", new FeedbackViewModel() { PageId = Model.Id })
-</div>

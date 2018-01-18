@@ -1,12 +1,11 @@
 ﻿@using NHS111.Models.Models.Web
+@using NHS111.Models.Models.Web.FromExternalServices
 @model  OutcomeViewModel
-
 @{
-    var services = Model.DosCheckCapacitySummaryResult.Success.Services;
-}
+    var services = Model.GroupedDosServices.FirstOrDefault(s => s.OnlineDOSServiceType == OnlineDOSServiceType.GoTo).Services;
+    var serviceCount = 0;
 
-@if (services.Any(s => !s.CallbackEnabled && string.IsNullOrEmpty(s.ContactDetails)))
-{
+
     string title;
     if (ViewData.Keys.Contains("VisitTitle"))
     {
@@ -14,35 +13,85 @@
     }
     else
     {
-        var serviceCount = services.Count(s => !s.CallbackEnabled && string.IsNullOrEmpty(s.ContactDetails));
+        serviceCount = services.Count(s => !s.CallbackEnabled && string.IsNullOrEmpty(s.ContactDetails));
         title = serviceCount > 1 ? "There are " + serviceCount + " places you can visit" : "There is 1 place you can visit";
     }
-    <h5 id="alternative-service-go-to-link">@title</h5>
-    <div class="alternative-care-service">
-        @if (Model.Id == "Dx08" && Model.UserInfo.CurrentAddress.IsPostcodeFirst) {
-            <ul><li>Your own GP should already know about any medicines you’re taking. If you see a different GP, tell them about your medicines</li></ul>
-        }
-        <div class="alternative-care-service content">
-            @foreach (var service in services.Where(s => !s.CallbackEnabled  && string.IsNullOrEmpty(s.ContactDetails)))
+}
+
+@if (Model.Id == "Dx08" && Model.UserInfo.CurrentAddress.IsPostcodeFirst)
+{
+    <section class="callout callout--info">
+        <div class="reading-width">
+            <p>As you may not see your usual GP, let the service know which medicines you take.</p>
+        </div>
+    </section>
+}
+
+@{
+    IEnumerable<ServiceViewModel> serviceList = services.Where(s => !s.CallbackEnabled && string.IsNullOrEmpty(s.ContactDetails));
+    String mapServices = "[";
+    for (var i = 0; i < serviceList.Count(); i++)
+    {
+        ServiceViewModel service = serviceList.ElementAt(i);
+        mapServices += "{";
+        mapServices += "\"Northings\": \"" + service.Northings + "\",";
+        mapServices += "\"Eastings\": \"" + service.Eastings + "\",";
+        mapServices += "\"Name\": \"" + service.Name + "\",";
+        mapServices += "\"CurrentPostcode\": \"" + Model.UserInfo.CurrentAddress.Postcode + "\",";
+        mapServices += "\"Address\": [";
+
+        for (var j = 0; j < service.AddressLines.Count(); j++)
+        {
+            String address = service.AddressLines[j];
+            mapServices += "\"" + address + "\"";
+            if (j < service.AddressLines.Count() - 1)
             {
-                <h4 class="service-title">@WebUtility.HtmlDecode(service.Name)</h4>
-                <p>@WebUtility.HtmlDecode(service.Address)</p>
-                <p>@WebUtility.HtmlDecode(service.ServiceOpeningTimesMessage)</p>
-                <p>You don't need to call this service, you can go there during the times shown above.</p>
-                using (Html.BeginForm("GetDirections", "Outcome", FormMethod.Post))
+                mapServices += ",";
+            }
+        }
+
+        mapServices += "]}";
+        if (i < serviceList.Count() - 1)
+        {
+            mapServices += ",";
+        }
+    }
+    mapServices += "]";
+}
+
+<div class="cards cards--numbered cards--goto">
+
+    @for (var i = 0; i < serviceList.Count(); i++)
+    {
+        var service = serviceList.ElementAt(i);
+        <div class="card" data-index="@Html.Raw(i)">
+            <button class="card__marker-link" role="presentation">@Html.Raw(i + 1)</button>
+            <h3>@WebUtility.HtmlDecode(service.Name)</h3>
+            <p>
+                @foreach (String address in service.AddressLines)
                 {
-                    @Html.HiddenFor(m => m.SessionId)
-                    @Html.HiddenFor(m => m.JourneyId)
-                    @Html.HiddenFor(m => m.JourneyJson)
-                    @Html.HiddenFor(m => m.Id)
-                    @Html.Hidden("SelectedServiceId", @service.Id)
-                    @Html.Hidden("SelectedServiceName", @service.Name)
-                    @Html.Hidden("SelectedServiceAddress", @service.Address)
-                    <div class="service-direction">
-                        <input class="button button-next button-link" type="submit" value="Get directions" />
-                    </div>
+                    @WebUtility.HtmlDecode(address)<br />
                 }
+            </p>
+            @Html.Partial("_ServiceOpeningTimes", service, ViewData) 
+            @using (Html.BeginForm("GetDirections", "Outcome", FormMethod.Post))
+            {
+                @Html.HiddenFor(m => m.SessionId)
+                @Html.HiddenFor(m => m.JourneyId)
+                @Html.HiddenFor(m => m.JourneyJson)
+                @Html.HiddenFor(m => m.Id)
+                @Html.Hidden("SelectedServiceId", @service.Id)
+                @Html.Hidden("SelectedServiceName", @service.Name)
+                @Html.Hidden("SelectedServiceAddress", @service.Address)
+                <hr />
+                <p>This service doesn't require an appointment</p>
+                <button class="button--link card__directions--fallback" type="submit">Get directions</button>
+                <p><a class="card__directions" style="display: none;" target="_blank" href="@string.Format("https://www.google.com/maps/dir/?api=1&origin={0}&destination={1}", Model.UserInfo.CurrentAddress.Postcode, service.Address)">Get directions</a></p>
             }
         </div>
-    </div>
-}
+    }
+</div>
+
+<script>
+window.mapServices = @Html.Raw(mapServices)
+</script>

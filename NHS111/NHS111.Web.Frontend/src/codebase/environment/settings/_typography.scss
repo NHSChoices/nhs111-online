@@ -1,0 +1,168 @@
+@import "./globals";
+
+$nhs-font-stack: "Frutiger W01", Arial, sans-serif;
+$print-font-stack: sans-serif;
+
+$is-print: false !default;
+
+$base-font-size: 16px;
+$baseline-grid-unit: 4px;
+$default-spacing-unit: $baseline-grid-unit * 4;
+$measure: 40em; // comfy reading width of ~ 55-65 characters
+
+@font-face {
+  font-family:"Frutiger W01";
+  src:url("https://assets.nhs.uk/fonts/fe232554-5489-4874-bb45-bd966c8c5932.eot?#iefix");
+  src:url("https://assets.nhs.uk/fonts/fe232554-5489-4874-bb45-bd966c8c5932.eot?#iefix") format("eot"),
+      url("https://assets.nhs.uk/fonts/0811514e-6660-4043-92c1-23d0b8caaa2f.woff2") format("woff2"),
+      url("https://assets.nhs.uk/fonts/aeae8cac-ba4d-40d2-bbcf-936f2c7dcfe6.woff") format("woff"),
+      url("https://assets.nhs.uk/fonts/caedf2e6-fbef-4928-b08e-1f975981ae8d.ttf") format("truetype"),
+      url("https://assets.nhs.uk/fonts/7def0e34-f28d-434f-b2ec-472bde847115.svg") format("svg");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face{
+  font-family:"Frutiger W01";
+  src:url("https://assets.nhs.uk/fonts/eb06b4c3-c0fd-4cd0-a9d9-a2954f6839a7.eot?#iefix");
+  src:url("https://assets.nhs.uk/fonts/eb06b4c3-c0fd-4cd0-a9d9-a2954f6839a7.eot?#iefix") format("eot"),
+      url("https://assets.nhs.uk/fonts/8c92eb68-ce37-4962-a9f4-5b47d336bd1c.woff2") format("woff2"),
+      url("https://assets.nhs.uk/fonts/9bdfdcac-bbd4-46a9-9280-056c9a4438a2.woff") format("woff"),
+      url("https://assets.nhs.uk/fonts/5dae3a6e-9b07-4c2f-aed2-1f5b8951261b.ttf") format("truetype"),
+      url("https://assets.nhs.uk/fonts/eae74276-dd78-47e4-9b27-dac81c3411ca.svg") format("svg");
+  font-weight: 700;
+  font-style: normal;
+}
+
+$type-settings-map: (
+  16: -1,
+  20: 0,
+  24: 1,
+  32: 2,
+  36: 5,
+  38: 3,
+  52: 4
+);
+
+/* stylelint-disable */
+$type-settings: (
+  -1: (
+    large: (
+      font-size: 16px,
+      line-height: $baseline-grid-unit * 6, // 24px
+    ),
+    medium: (
+      font-size: 16px,
+      line-height: $baseline-grid-unit * 6, // 24px
+    ),
+    small: (
+      font-size: 16px,
+      line-height: $baseline-grid-unit * 6, // 24px
+    ),
+    print: (
+      font-size: 12pt,
+    ),
+  ),
+  0: (
+    large: (
+      font-size: 20px,
+      line-height: $baseline-grid-unit * 8, // 32px
+    ),
+    medium: (
+      font-size: 20px,
+      line-height: $baseline-grid-unit * 8, // 32px
+    ),
+    small: (
+      font-size: 20px,
+      line-height: $baseline-grid-unit * 8, // 32px
+    ),
+    print: (
+      font-size: 14pt,
+    ),
+  ),
+  1: (
+    large: (
+      font-size: 24px,
+      line-height: $baseline-grid-unit * 8, // 32px
+    ),
+    medium: (
+      font-size: 24px,
+      line-height: $baseline-grid-unit * 8, // 32px
+    ),
+    small: (
+      font-size: 24px,
+      line-height: $baseline-grid-unit * 8, // 32px
+    ),
+    print: (
+      font-size: 16pt,
+    ),
+  ),
+  2: (
+    large: (
+      font-size: 32px,
+      line-height: $baseline-grid-unit * 12, // 48px
+    ),
+    medium: (
+      font-size: 28px,
+      line-height: $baseline-grid-unit * 12, // 48px
+    ),
+    small: (
+      font-size: 24px,
+      line-height: $baseline-grid-unit * 10, // 40px
+    ),
+    print: (
+      font-size: 18pt,
+    ),
+  ),
+  3: (
+    large: (
+      font-size: 38px,
+      line-height: $baseline-grid-unit * 12, // 48px
+    ),
+    medium: (
+      font-size: 36px,
+      line-height: $baseline-grid-unit * 12, // 48px
+    ),
+    small: (
+      font-size: 32px,
+      line-height: $baseline-grid-unit * 10, // 40px
+    ),
+    print: (
+      font-size: 20pt,
+    ),
+  ),
+  4: (  // used for h1.heading--large
+    large: (
+      font-size: 52px,
+      line-height: $baseline-grid-unit * 15, // 48px
+    ),
+    medium: (
+      font-size: 44px,
+      line-height: $baseline-grid-unit * 14, // 48px
+    ),
+    small: (
+      font-size: 40px,
+      line-height: $baseline-grid-unit * 12, // 40px
+    ),
+    print: (
+      font-size: 20pt,
+    ),
+  ),
+  5: (  // used for h2.heading--large
+    large: (
+      font-size: 36px,
+      line-height: $baseline-grid-unit * 15, // 48px
+    ),
+    medium: (
+      font-size: 32px,
+      line-height: $baseline-grid-unit * 14, // 48px
+    ),
+    small: (
+      font-size: 28px,
+      line-height: $baseline-grid-unit * 12, // 40px
+    ),
+    print: (
+      font-size: 20pt,
+    ),
+  ),
+);

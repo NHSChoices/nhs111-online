@@ -1,0 +1,15 @@
+﻿@using NHS111.Models.Models.Domain
+@using NHS111.Models.Models.Web
+@model SearchJourneyViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutNhsUK.cshtml";
+}
+
+@section Title  {NHS 111 Online - Tell us the symptom}
+
+
+@section FeedbackSection {
+    @Html.Partial("_FeedbackDetails", new FeedbackViewModel() {UserId = Model.SessionId.ToString(), PageData = new PageDataViewModel(PageDataViewModel.PageType.Search, Model) });
+}
+
+@Html.Partial("_SearchBox", Model, ViewData)

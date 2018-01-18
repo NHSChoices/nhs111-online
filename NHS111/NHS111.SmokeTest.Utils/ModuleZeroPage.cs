@@ -10,34 +10,38 @@ using OpenQA.Selenium.Support.PageObjects;
 
 namespace NHS111.SmokeTest.Utils
 {
-    public class ModuleZeroPage 
+    public class ModuleZeroPage : LayoutPage
     {
-        private readonly IWebDriver _driver;
-        private const string _headerText = "Do any of these apply?";
+        private const string _headerText = "Check it’s not an emergency";
 
-        [FindsBy(How = How.ClassName, Using = "button-next")]
-        public IWebElement NoneApplyButton { get; set; }
+        [FindsBy(How = How.ClassName, Using = "button--next")]
+        private IWebElement NoneApplyButton { get; set; }
 
-        [FindsBy(How = How.CssSelector, Using = "h1.heading-large")]
-        public IWebElement Header { get; set; }
+        [FindsBy(How = How.CssSelector, Using = "h1.heading--alert")]
+        private IWebElement Header { get; set; }
 
+        [FindsBy(How = How.CssSelector, Using = ".callout--alert li")]
+        private IWebElement List { get; set; }
 
-        public ModuleZeroPage(IWebDriver driver) 
+        public ModuleZeroPage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
-            PageFactory.InitElements(_driver, this);
         }
 
-        public GenderPage ClickNoneApplyButton()
+        public DemographicsPage ClickNoneApplyButton()
         {
             NoneApplyButton.Submit();
-            return new GenderPage(_driver);
+            return new DemographicsPage(Driver);
         }
-        public void Verify()
+
+        public void VerifyHeader()
         {
             Assert.IsTrue(Header.Displayed);
             Assert.AreEqual(_headerText, Header.Text);
         }
 
+        public void VerifyList()
+        {
+            Assert.IsTrue(List.Displayed);
+        }
     }
 }

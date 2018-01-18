@@ -38,7 +38,8 @@ namespace NHS111.Models.Mappers.WebMappings
                 .ForMember(s => s.CurrentView, o => o.Ignore())
                 .ForMember(s => s.SurveyLink, o => o.Ignore())
                 .ForMember(s => s.Informant, opt => opt.Ignore())
-                .ForMember(s => s.UnavailableSelectedService, o => o.Ignore());
+                .ForMember(s => s.UnavailableSelectedService, o => o.Ignore())
+                .ForMember(s => s.GroupedDosServices, o => o.Ignore());
 
             Mapper.CreateMap<JourneyViewModel, AuditEntry>()
                 .ForMember(dest => dest.AnswerTitle, opt => opt.Ignore())
@@ -62,8 +63,8 @@ namespace NHS111.Models.Mappers.WebMappings
                 .ForMember(dest => dest.DosResponse, opt => opt.Ignore())
                 .ForMember(dest => dest.ItkRequest, opt => opt.Ignore())
                 .ForMember(dest => dest.ItkResponse, opt => opt.Ignore())
-                .ForMember(dest => dest.Campaign, opt => opt.Ignore())
-                .ForMember(dest => dest.CampaignSource, opt => opt.Ignore());
+                .ForMember(dest => dest.CampaignSource, opt => opt.Ignore())
+                .ForMember(dest => dest.Campaign, opt => opt.Ignore());
         }
 
         public class FromAnswerToJourneyViewModelConverter : ITypeConverter<Answer, JourneyViewModel>
@@ -134,6 +135,10 @@ namespace NHS111.Models.Mappers.WebMappings
             if (questionWithAnswers.Group != null)
             {
                 journeyViewModel.OutcomeGroup = questionWithAnswers.Group;
+                //this needs to be mapped better, ultimately this should be data driven from data layers so the above line is all that's needed.
+                var outcomeGroup = OutcomeGroup.OutcomeGroups[questionWithAnswers.Group.Id];
+                journeyViewModel.OutcomeGroup.Label = outcomeGroup.Label;
+                journeyViewModel.OutcomeGroup.ITK = outcomeGroup.ITK;
             }
 
             if (questionWithAnswers.State != null)

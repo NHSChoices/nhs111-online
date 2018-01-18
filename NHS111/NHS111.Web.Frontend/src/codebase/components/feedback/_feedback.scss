@@ -1,0 +1,27 @@
+@import "../environment/settings/_colours.scss";
+@import "../environment/tools/mixins/layout";
+
+.feedback__input {
+  resize: none;
+  background-color: #fff;
+  border: 2px solid $blue;
+  -webkit-appearance: none;
+  border-radius: 0;
+  min-height: 150px;
+  padding: 20px 0 15px 15px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.feedback__counter {
+  font-weight: 600;
+  margin-top: 8px;
+  text-align: right;
+
+  float: right;
+  width: 60%;
+}
+
+.feedback__counter--error  {
+  color: $error-colour;
+}

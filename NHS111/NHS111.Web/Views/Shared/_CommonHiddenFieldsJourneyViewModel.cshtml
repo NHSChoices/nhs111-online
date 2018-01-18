@@ -9,12 +9,16 @@
 
 
 @Html.HiddenFor(x => Model.Id)
+@Html.HiddenFor(x => Model.SessionId)
 @Html.HiddenFor(x => Model.JourneyId)
 @Html.HiddenFor(x => Model.JourneyJson)
 @Html.HiddenFor(x => Model.Title)
 @Html.HiddenFor(x => Model.SymptomDiscriminatorCode)
 @Html.HiddenFor(x => Model.QuestionNo)
 @Html.HiddenFor(x => Model.StateJson)
+@Html.HiddenFor(x => Model.Campaign)
+@Html.HiddenFor(x => Model.Source)
+    
 @for (int i = 0; i < Model.CollectedKeywords.Keywords.Count; i++)
 {
     @Html.HiddenFor(model => Model.CollectedKeywords.Keywords[i])

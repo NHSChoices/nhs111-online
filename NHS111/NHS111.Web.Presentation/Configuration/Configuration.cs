@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using NHS111.Models.Models.Web.Enums;
 
 namespace NHS111.Web.Presentation.Configuration
 {
@@ -11,11 +12,14 @@ namespace NHS111.Web.Presentation.Configuration
         public string GPSearchByIdUrl { get { return ConfigurationManager.AppSettings["GPSearchByIdUrl"]; } }
         public string BusinessApiProtocolandDomain { get { return ConfigurationManager.AppSettings["BusinessApiProtocolandDomain"]; } }
 
+        public string CCGBusinessApiBaseProtocolandDomain { get { return ConfigurationManager.AppSettings["CCGApiBaseUrl"]; } }
+
 
         public string BusinessDosCheckCapacitySummaryUrl { get { return ConfigurationManager.AppSettings["BusinessDosCheckCapacitySummaryUrl"]; } }
         public string BusinessDosServicesByClinicalTermUrl { get { return ConfigurationManager.AppSettings["BusinessDosServicesByClinicalTermUrl"]; } }
         public string BusinessDosServiceDetailsByIdUrl { get { return ConfigurationManager.AppSettings["BusinessDosServiceDetailsByIdUrl"]; } }
         public string FeedbackAddFeedbackUrl { get { return ConfigurationManager.AppSettings["FeedbackAddFeedbackUrl"]; } }
+        public string FeedbackDeleteFeedbackUrl { get { return ConfigurationManager.AppSettings["FeedbackDeleteFeedbackUrl"]; } }
         public string FeedbackAuthorization { get { return ConfigurationManager.AppSettings["FeedbackAuthorization"]; } }
         public string PostcodeSearchByIdApiUrl { get { return ConfigurationManager.AppSettings["PostcodeSearchByIdApiUrl"]; } }
         public string PostcodeSubscriptionKey { get { return ConfigurationManager.AppSettings["PostcodeSubscriptionKey"]; } }
@@ -32,6 +36,9 @@ namespace NHS111.Web.Presentation.Configuration
         public string DosMobileBaseUrl { get { return ConfigurationManager.AppSettings["DOSMobileBaseUrl"]; } }
         public string DosMobileUsername { get { return ConfigurationManager.AppSettings["dos_mobile_credential_user"]; } }
         public string DosMobilePassword { get { return ConfigurationManager.AppSettings["dos_mobile_credential_password"]; } }
+
+        public string QueryStringEncryptionKey { get { return ConfigurationManager.AppSettings["QueryStringEncryptionKey"]; } }
+        public string QueryStringEncryptionBytes { get { return ConfigurationManager.AppSettings["QueryStringEncryptionBytes"]; } }
 
         public bool IsPublic {
             get {
@@ -52,6 +59,11 @@ namespace NHS111.Web.Presentation.Configuration
         }
 
         public string LoggingServiceUrl { get { return ConfigurationManager.AppSettings["LoggingServiceUrl"]; } }
+
+        public string CCGBusinessApiGetCCGUrl(string postcode)
+        {
+            return String.Format(ConfigurationManager.AppSettings["CCGApiGetCCGByPostcodeUrl"], postcode);
+        }
 
         public string GetBusinessApiGetCategoriesWithPathways() { return GetBusinessApiUrlWithDomain("BusinessApiGetCategoriesWithPathways"); }
         public string GetBusinessApiPathwaySearchUrl(string gender, string age, bool pathOnly = false)
@@ -93,9 +105,9 @@ namespace NHS111.Web.Presentation.Configuration
             return string.Format(GetBusinessApiUrlWithDomain("BusinessApiPathwaySymptomGroupUrl"), symptonGroups);
         }
 
-        public string GetBusinessApiNextNodeUrl(string pathwayId, string journeyId, string state, bool pathOnly = false)
+        public string GetBusinessApiNextNodeUrl(string pathwayId, NodeType currentNodeType, string journeyId, string state, bool pathOnly = false)
         {
-            return string.Format(GetBusinessApiUrlWithDomain("BusinessApiNextNodeUrl", pathOnly), pathwayId, journeyId, state);
+            return string.Format(GetBusinessApiUrlWithDomain("BusinessApiNextNodeUrl", pathOnly), pathwayId, currentNodeType, journeyId, state);
         }
 
         public string GetBusinessApiQuestionByIdUrl(string pathwayId, string questionId, bool pathOnly = false)
@@ -149,6 +161,11 @@ namespace NHS111.Web.Presentation.Configuration
             return GetBusinessApiUrlWithDomain("BusinessApiListOutcomesUrl");
         }
 
+        public string GetBusinessApiVersionUrl(bool pathOnly = false)
+        {
+            return GetBusinessApiUrlWithDomain("BusinessApiVersionUrl", pathOnly);
+        }
+
         private string GetBusinessApiUrlWithDomain(string endpointUrlkey, bool pathOnly=false)
         {
             var businessApiDomain = ConfigurationManager.AppSettings["BusinessApiProtocolandDomain"];
@@ -179,12 +196,16 @@ namespace NHS111.Web.Presentation.Configuration
         string GPSearchUrl { get; }
         string GPSearchApiUrl { get; }
         string GPSearchByIdUrl { get; }
+
+        string CCGBusinessApiBaseProtocolandDomain { get; }
+
+        string CCGBusinessApiGetCCGUrl(string postcode);
         string GetBusinessApiPathwayUrl(string pathwayId, bool pathOnly = false);
         string GetBusinessApiGroupedPathwaysUrl(string searchString);
         string GetBusinessApiGroupedPathwaysUrl(string searchString, string gender, int age, bool pathOnly = false);
         string GetBusinessApiPathwayIdUrl(string pathwayNumber, string gender, int age);
         string GetBusinessApiPathwaySymptomGroupUrl(string symptonGroups);
-        string GetBusinessApiNextNodeUrl(string pathwayId, string journeyId, string state, bool pathOnly = false);
+        string GetBusinessApiNextNodeUrl(string pathwayId, NodeType currentNodeType, string journeyId, string state, bool pathOnly = false);
         string GetBusinessApiQuestionByIdUrl(string pathwayId, string questionId, bool pathOnly = false);
         string GetBusinessApiCareAdviceUrl(int age, string gender, string careAdviceMarkers);
         string GetBusinessApiFirstQuestionUrl(string pathwayId, string state);
@@ -199,11 +220,13 @@ namespace NHS111.Web.Presentation.Configuration
         string GetBusinessApiGetCategoriesWithPathwaysGenderAge(string gender, int age, bool pathOnly = false);
         string GetBusinessApiGetPathwaysGenderAge(string gender, int age);
         string GetBusinessApiPathwaySearchUrl(string gender, string age, bool pathOnly=false);
+        string GetBusinessApiVersionUrl(bool pathOnly = false);
 
         string BusinessDosCheckCapacitySummaryUrl { get; }
         string BusinessDosServicesByClinicalTermUrl { get; }
         string BusinessDosServiceDetailsByIdUrl { get; }
         string FeedbackAddFeedbackUrl { get; }
+        string FeedbackDeleteFeedbackUrl { get; }
         string FeedbackAuthorization { get; }
         string PostcodeSearchByIdApiUrl { get; }
         string PostcodeSubscriptionKey { get; }
@@ -220,5 +243,8 @@ namespace NHS111.Web.Presentation.Configuration
         string DosMobileBaseUrl { get; }
         string DosMobileUsername { get; }
         string DosMobilePassword { get; }
+
+        string QueryStringEncryptionKey { get; }
+        string QueryStringEncryptionBytes { get; }
     }
 }

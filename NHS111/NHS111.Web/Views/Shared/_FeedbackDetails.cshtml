@@ -1,76 +1,26 @@
 ﻿@model NHS111.Models.Models.Web.FeedbackViewModel
 @{ Model.DateAdded = DateTime.Now; }
-<!--[if lte IE 8]>
-    <style>
-        .feedback-container {
-            color: black;
-        }
+@{
+    const int maxFeedbackLength = 1200;
+}
 
-    </style>
-<![endif]-->
-
-<div class="feedback-wrapper">
-    <div class="feedback-container feedback-container--open">
-        <div class="feedback-banner">
-            <span class="feedback-dismiss"></span>
-            <form id="FeedbackForm" action="@Url.Action("SubmitFeedback", "Feedback")">
-                <div id="FeedbackDetails">
-        
-                    <p class="feedback-message">
-                        @Html.LabelFor(m => m.Text, "Tell us if this page isn't clear")
-                    </p>
-                    <div class="feedback-form">
-                        @Html.TextAreaFor(m => m.Text, new { @placeholder = "Feedback", @Value = "", @class = "feedback-input", @maxlength = "8000" })
-                        <button type="button" class="feedback-btn feedback-submit button-next" id="btnFeedback" onclick="SubmitFeedback(this);" tabindex="0">Send feedback</button>
-                    </div>
-                </div>
+<section class="feedback page-section" id="feedback">
+    <details class="measure">
+        <summary id="feedback__summary">
+            <span class="details__arrow" role="presentation"></span>
+            @(String.IsNullOrEmpty(Model.Heading) ? "Help us improve" : Model.Heading)
+        </summary>
+        <div>
+            @using (Ajax.BeginForm("SubmitFeedback", "Feedback", new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "feedback-details", LoadingElementId = "loader", HttpMethod = "POST", OnBegin = "$('.feedback form').fadeOut(600);", OnSuccess = "$('#feedback-details').fadeIn(600);" }))
+            {
                 @Html.HiddenFor(m => m.UserId)
-                @Html.HiddenFor(m => m.PageId)
-            </form>
+                @Html.Partial("_CommonHiddenFieldsPageDataViewModel", Model.PageData, new ViewDataDictionary() { TemplateInfo = new TemplateInfo() { HtmlFieldPrefix = "PageData" } })
+                @(String.IsNullOrEmpty(Model.Paragraph) ? null : Html.Raw("<p>" + Model.Paragraph + "</p>")) <p>We use feedback to make the service better but can't reply to any comments. Don't include any medical or personal information like your name or email.</p>
+                @Html.TextAreaFor(m => m.Text, new { @placeholder = "Feedback", @Value = "", @class = "feedback__input", @maxlength = maxFeedbackLength, @aria_labelledby = "feedback__summary" })
+                <div id="textdetailscounter" class="feedback__counter">@(maxFeedbackLength) character limit</div>
+                <button class="feedback__submit button--next button--secondary" id="btnFeedback">Send feedback</button>
+            }
+            <div id="feedback-details"></div>
         </div>
-    </div>
-</div>
-<script>
-
-    $('.feedback-dismiss').click(function () {
-        $('.feedback-wrapper').slideToggle();
-    });
-
-    $('.feedback-input').focus(function () {
-        $(this).animate({
-            //width: "70%",
-            //height: "70%"
-        });
-    });
-
-    $(document).ready(function () {
-        $('.feedback-input').autogrow({ vertical: true, horizontal: false });
-    });
-
-
-    function SubmitFeedback(btnClicked) {
-        if ($("#Text").val() !== "") {
-            var $form = $(btnClicked).parents("form");
-            $form[0][0].value = $('<div/>').text($form[0][0].value).html();
-            var detailsDiv = $("#FeedbackDetails");
-            $(detailsDiv).slideToggle(600);
-            $.ajax({
-                type: "POST",
-                url: $form.attr("action"),
-                data: $form.serialize(),
-                error: function (xhr, status, error) {
-                    alert(error);
-                    $(detailsDiv).slideToggle(600);
-                    //do something about the error
-                },
-                success: function (response) {
-                    $(detailsDiv).html('<p>' + response.Message + '</p>');
-                    $(detailsDiv).slideToggle(600);
-                }
-            });
-            return false;
-        }
-    }
-
-   
-</script>
+    </details>
+</section>

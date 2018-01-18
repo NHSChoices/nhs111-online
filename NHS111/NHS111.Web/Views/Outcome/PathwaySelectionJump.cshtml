@@ -2,8 +2,6 @@
 @inherits NHS111.Web.Views.Shared.SurveyLinkView<OutcomeViewModel>
 @{ Layout = "~/Views/Shared/_LayoutNhsUk.cshtml"; }
 
-<link href="@NHS111.Web.Helpers.Versioning.GetVersionedUriRef("~/content/css_NhsUk/question.css")" media="screen" rel="stylesheet" type="text/css" />
-
 @section Title {}
 @section HeadTop {
 @{ var url = string.Format("/selectionjump/{0}/", Url.Encode(Model.PathwayNo)); }
@@ -22,7 +20,7 @@
 @section FeedbackSection {
     @if (!SurveyLinkFeature.IsEnabled)
     {
-        @Html.Partial("_FeedbackDetails", new FeedbackViewModel() { UserId = Model.SessionId.ToString(), PageId = Model.Id });
+        @Html.Partial("_FeedbackDetails", new FeedbackViewModel() { UserId = Model.SessionId.ToString(), PageData = new PageDataViewModel(PageDataViewModel.PageType.Outcome, Model) })
     }
     else
     {
@@ -30,7 +28,7 @@
     }
 }
 
-@using (Html.BeginForm("Navigation", "Question", FormMethod.Post))
+@using (Html.BeginForm("Navigation", "Question", FormMethod.Post, new { @class = "measure" }))
 {
     @Html.HiddenFor(x => Model.SessionId)
     @Html.HiddenFor(x => Model.Id)
@@ -46,14 +44,16 @@
     @Html.HiddenFor(x => Model.QuestionNo)
     @Html.HiddenFor(x => Model.StateJson)
     @Html.HiddenFor(x => Model.FilterServices)
+    @Html.HiddenFor(x => Model.UserInfo.CurrentAddress.Postcode)
 
-    <h2 class="question-header">@Model.TitleWithoutBullets</h2>
+    <h2>@Model.TitleWithoutBullets</h2>
     <p>Your health assessment can’t be completed with the current online service.</p>
     <p>Please call 111 now for help and advice. Calls to NHS 111 are free.</p>
     <hr />
+
     if (!Model.IsFirstStep)
     {
-        <input class="button previous-question" id="previousScreen" type="submit" name="PreviousQuestion" value="Previous question" />
+        <button class="button--stacked button--previous button--link" id="previousScreen" type="submit" value="PreviousQuestion" name="PreviousQuestion" formnovalidate>Change my previous answer</button>
     }
 }
 <script type="text/javascript">

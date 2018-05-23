@@ -45,7 +45,7 @@ namespace NHS111.Web.Controllers {
             if (!string.IsNullOrEmpty(args))
             {
                 var decryptedFields = new QueryStringEncryptor(args);
-                model.UserInfo.CurrentAddress.Postcode = decryptedFields["postcode"];
+                model.CurrentPostcode = decryptedFields["postcode"];
                 model.SessionId = Guid.Parse(decryptedFields["sessionId"]);
             }
 
@@ -106,6 +106,21 @@ namespace NHS111.Web.Controllers {
            
             return View(viewName, nextModel);
         }
+
+        [HttpPost]
+        [ActionName("NextNodeDetails")]
+        public async Task<JsonResult> GetNextNodeDetails(QuestionViewModel model)
+        {
+            var nodeDetails = new NodeDetailsViewModel() { NodeType = NodeType.Question };
+            if (ModelState.IsValidField("SelectedAnswer"))
+            {
+                var nextNode = await GetNextNode(model);
+                nodeDetails = _journeyViewModelBuilder.BuildNodeDetails(nextNode);
+            }
+
+            return Json(nodeDetails);
+        }
+
 
         [HttpGet]
         public async Task<ActionResult> InitialQuestion()
@@ -175,24 +190,17 @@ namespace NHS111.Web.Controllers {
                     DosEndpoint? endpoint = SetEndpoint();
 
                     if (shouldPrefillPostcode) {
-                        resultingModel.UserInfo.CurrentAddress.Postcode = _postcodePrefillFeature.GetPostcode(Request);
+                        resultingModel.CurrentPostcode = _postcodePrefillFeature.GetPostcode(Request);
                         outcomeModel.CurrentView = _viewRouter.GetViewName(resultingModel, ControllerContext);
-                        //defaulting the label to 'services' because this is normally handled by the specific outcome view
-                        if (outcomeModel.OutcomeGroup.IsPostcodeFirst()) {
-                            var controller = DependencyResolver.Current.GetService<PostcodeFirstController>();
+
+                        var controller = DependencyResolver.Current.GetService<OutcomeController>();
                             controller.ControllerContext = new ControllerContext(ControllerContext.RequestContext,
                                 controller);
-                            return await controller.Outcome(outcomeModel, null, null, endpoint);
-                        }
-                        else {
-                            var controller = DependencyResolver.Current.GetService<OutcomeController>();
-                            controller.ControllerContext = new ControllerContext(ControllerContext.RequestContext,
-                                controller);
-                            if (outcomeModel.OutcomeGroup.SearchDestination == "ServiceDetails")
-                                return await controller.ServiceDetails(outcomeModel, null, endpoint);
-                            if (outcomeModel.OutcomeGroup.SearchDestination == "ServiceList")
-                                return await controller.ServiceList(outcomeModel, null, null, endpoint);
-                        }
+                        if (OutcomeGroup.PrePopulatedDosResultsOutcomeGroups.Contains(outcomeModel.OutcomeGroup))
+                            return await controller.DispositionWithServices(outcomeModel, "", endpoint);
+                
+                        return await controller.ServiceList(outcomeModel, null, null, endpoint);
+                        
                     }
                 }
             }

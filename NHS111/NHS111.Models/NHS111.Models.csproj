@@ -9,11 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NHS111.Models</RootNamespace>
     <AssemblyName>NHS111.Models</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>383536a0</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -171,6 +172,7 @@
     <Compile Include="Mappers\WebMappings\FromOutcomeVIewModelToITKDispatchRequest.cs" />
     <Compile Include="Mappers\WebMappings\FromOutcomeViewModelToSubmitEncounterToServiceRequest.cs" />
     <Compile Include="Mappers\WebMappings\AddressInfoViewModelMapper.cs" />
+    <Compile Include="Mappers\WebMappings\FromSystemDayOfWeekToDosDayOfWeek.cs" />
     <Compile Include="Models\Business\CheckCapacitySummaryResult.cs" />
     <Compile Include="Models\Business\Enums\DispositionTimePeriod.cs" />
     <Compile Include="Models\Business\Location\PostcodeResult.cs" />
@@ -208,10 +210,14 @@
     <Compile Include="Models\Web\CCG\ServiceListModel.cs" />
     <Compile Include="Models\Web\Clock\SystemClock.cs" />
     <Compile Include="Models\Web\Clock\IClock.cs" />
+    <Compile Include="Models\Web\ConfirmLocationViewModel.cs" />
     <Compile Include="Models\Web\DosRequests\DosEndpoint.cs" />
     <Compile Include="Models\Web\DosRequests\DosFilteredCase.cs" />
     <Compile Include="Models\Web\DosRequests\DosServicesByClinicalTermRequest.cs" />
     <Compile Include="Models\Web\FeedbackViewModel.cs" />
+    <Compile Include="Models\Web\FromExternalServices\AddressLocationResult.cs" />
+    <Compile Include="Models\Web\LocationInfoViewModel.cs" />
+    <Compile Include="Models\Web\NodeDetailsViewModel.cs" />
     <Compile Include="Models\Web\PageDataViewModel.cs" />
     <Compile Include="Models\Web\FromExternalServices\DosCheckCapacitySummaryResult.cs" />
     <Compile Include="Models\Web\FromExternalServices\DosService.cs" />
@@ -273,6 +279,7 @@
     <Compile Include="Models\Web\Logging\AuditEntry.cs" />
     <Compile Include="Models\Web\Logging\AuditViewModel.cs" />
     <Compile Include="Models\Web\Logging\LogEntry.cs" />
+    <Compile Include="Models\Web\OnlineDOSServiceType.cs" />
     <Compile Include="Models\Web\OutcomeViewModel.cs" />
     <Compile Include="Models\Web\JourneyViewModel.cs" />
     <Compile Include="Models\Web\FromExternalServices\Surgery.cs" />
@@ -287,10 +294,14 @@
     <Compile Include="Models\Web\Validators\DateOfBirthMonthValidator.cs" />
     <Compile Include="Models\Web\Validators\DateOfBirthYearValidator.cs" />
     <Compile Include="Models\Web\Validators\FindServicesAddressViewModelValidator.cs" />
+    <Compile Include="Models\Web\Validators\HomeAddressSameAsCurrentValidator.cs" />
+    <Compile Include="Models\Web\Validators\HomeAddressValidator.cs" />
     <Compile Include="Models\Web\Validators\InformantForenameValidator.cs" />
     <Compile Include="Models\Web\Validators\InformantSurnameValidator.cs" />
     <Compile Include="Models\Web\Validators\InformantViewModelValidator.cs" />
     <Compile Include="Models\Web\Validators\IPostcodeAllowedValidator.cs" />
+    <Compile Include="Models\Web\Validators\JourneyViewModelValidator.cs" />
+    <Compile Include="Models\Web\Validators\LocationInfoViewModelValidator.cs" />
     <Compile Include="Models\Web\Validators\PatientInformantViewModelValidator.cs" />
     <Compile Include="Models\Web\Validators\PersonNameValidator.cs" />
     <Compile Include="Models\Web\Validators\QuestionViewModelValidator.cs" />

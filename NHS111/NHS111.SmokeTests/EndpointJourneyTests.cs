@@ -76,7 +76,7 @@ namespace NHS111.SmokeTests
                 .AnswerSuccessiveByOrder(3, 5)
                 .AnswerForDispostion<PostcodeFirstPage>("No - I've not taken any painkillers");
 
-            postcodeFirstPage.EnterPostCodeAndSubmit("LS17 7NZ");
+            //postcodeFirstPage.EnterPostCodeAndSubmit("LS17 7NZ");
 
             postcodeFirstPage.VerifyOutcome("See a dentist in the next few days");
             postcodeFirstPage.VerifyWorseningPanel(WorseningMessages.Call111PostCodeFirst);
@@ -110,7 +110,7 @@ namespace NHS111.SmokeTests
         {
             var questionPage = TestScenerios.LaunchTriageScenerio(Driver, "Headache", TestScenerioSex.Male, TestScenerioAgeGroups.Adult);
 
-            questionPage.VerifyQuestion("Have you hurt or banged your head in the last 7 days?");
+            questionPage.VerifyQuestion("Have you hurt your head in the last 7 days?");
             var outcomePage = questionPage
                 .AnswerSuccessiveByOrder(3,3)
                 .Answer(5)
@@ -119,9 +119,8 @@ namespace NHS111.SmokeTests
                 .Answer(3)
                 .AnswerForDispostion<OutcomePage>("Yes");
 
-            outcomePage.VerifyOutcome("Your answers suggest you need urgent medical attention within 1 hour");
+            outcomePage.VerifyOutcome("Go to an emergency treatment centre urgently");
             outcomePage.VerifyWorseningPanel(WorseningMessages.Call111PostCodeFirst);
-            outcomePage.VerifyFindService(FindServiceTypes.AccidentAndEmergency);
             outcomePage.VerifyCareAdviceHeader("What you can do in the meantime");
             outcomePage.VerifyCareAdvice(new string[] { "Headache", "Breathlessness", "Medication, pain and/or fever" });
         }
@@ -159,7 +158,7 @@ namespace NHS111.SmokeTests
         {
             var questionPage = TestScenerios.LaunchTriageScenerio(Driver, "Diarrhoea and Vomiting", TestScenerioSex.Male, TestScenerioAgeGroups.Child);
 
-            questionPage.VerifyQuestion("Have you brought up either of the following?");
+            questionPage.VerifyQuestion("Have you vomited up either of the following?");
             var outcomePage = questionPage
                 .Answer(4)
                 .AnswerSuccessiveByOrder(3,2)
@@ -205,7 +204,7 @@ namespace NHS111.SmokeTests
         {
             var questionPage = TestScenerios.LaunchTriageScenerio(Driver, "Headache", TestScenerioSex.Male, TestScenerioAgeGroups.Adult);
 
-            questionPage.VerifyQuestion("Have you hurt or banged your head in the last 7 days?");
+            questionPage.VerifyQuestion("Have you hurt your head in the last 7 days?");
             var outcomePage = questionPage
                 .AnswerSuccessiveByOrder(3, 3)
                 .Answer(5)
@@ -216,7 +215,7 @@ namespace NHS111.SmokeTests
                 .AnswerSuccessiveByOrder(1,2)
                 .AnswerForDispostion<PostcodeFirstPage>("Yes");
            
-            outcomePage.EnterPostCodeAndSubmit("LS17 7NZ");
+            //outcomePage.EnterPostCodeAndSubmit("LS17 7NZ");
 
             outcomePage.VerifyOutcome("Speak to your GP practice urgently");
             outcomePage.VerifyWorseningPanel(WorseningMessages.Call111PostCodeFirst);

@@ -36,6 +36,7 @@ namespace NHS111.Web.Controllers
             var startOfJourney = new SearchJourneyViewModel
             {
                 SessionId = model.SessionId,
+                CurrentPostcode = model.CurrentPostcode,
                 UserInfo = new UserInfo
                 {
                     Demography = model.UserInfo.Demography,
@@ -92,7 +93,7 @@ namespace NHS111.Web.Controllers
 
         [HttpGet]
         [Route("{gender}/{age}/Topics", Name = "CatergoriesUrl")]
-        public async Task<ActionResult> Categories(string gender, int age, string args)
+        public async Task<ActionResult> Categories(string gender, int age, string args, bool hasResults = false)
         {
             var decryptedArgs = new QueryStringEncryptor(args);
 
@@ -101,16 +102,18 @@ namespace NHS111.Web.Controllers
             var model = new SearchJourneyViewModel
             {
                 SessionId = Guid.Parse(decryptedArgs["sessionId"]),
+                CurrentPostcode = decryptedArgs["postcode"] ,
                 UserInfo = new UserInfo
                 {
                     Demography = ageGenderViewModel,
-                    CurrentAddress = new FindServicesAddressViewModel() { Postcode = decryptedArgs["postcode"] }
                 },
                 AllTopics = topicsContainingStartingPathways,
                 FilterServices = bool.Parse(decryptedArgs["filterServices"]),
                 SanitisedSearchTerm = decryptedArgs["searchTerm"],
+                EntrySearchTerm = decryptedArgs["searchTerm"],
                 Campaign = decryptedArgs["campaign"],
-                Source = decryptedArgs["source"]
+                Source = decryptedArgs["source"],
+                HasResults = hasResults
             };
 
             _userZoomDataBuilder.SetFieldsForSearchResults(model);

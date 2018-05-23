@@ -1,5 +1,6 @@
 ﻿@using NHS111.Models.Models.Domain
 @using NHS111.Models.Models.Web
+@using NHS111.Models.Models.Web.Enums
 @{ Layout = "~/Views/Shared/_LayoutNhsUk.cshtml"; }
 @inherits NHS111.Web.Views.Shared.DirectLinkingView<QuestionViewModel>
 
@@ -15,10 +16,10 @@
     <script>
         var pageId = '@Model.PathwayId';
         dataLayer = [
-        {
-            'virtualPageUrl': document.location.pathname + '@url',
-            'virtualPageTitle': '@Model.TitleWithoutBullets'
-        }];
+            {
+                'virtualPageUrl': document.location.pathname + '@url',
+                'virtualPageTitle': '@Model.TitleWithoutBullets'
+            }];
     </script>
 }
 
@@ -58,7 +59,7 @@
     @Html.HiddenFor(x => Model.DigitalTitle)
     @Html.HiddenFor(x => Model.UserInfo.Demography.Age)
     @Html.HiddenFor(x => Model.UserInfo.Demography.Gender)
-    @Html.HiddenFor(x => Model.UserInfo.CurrentAddress.Postcode)
+    @Html.HiddenFor(x => Model.CurrentPostcode)
     @Html.HiddenFor(x => Model.Title)
     @Html.HiddenFor(x => Model.SymptomDiscriminatorCode)
     @Html.HiddenFor(x => Model.QuestionNo)
@@ -92,6 +93,7 @@
                     <p>@Html.Raw(@Model.RationaleHtml)</p>
                 </div>
             }
+
             @for(var i=0;i < Model.OrderedAnswers().Count; i++)
             {
                 var answer = Model.OrderedAnswers()[i];
@@ -111,13 +113,91 @@
                     {
                         @Html.Partial("_HiddenText", new HiddenTextViewModel() {Summary = "What does this mean?", Details = new[] {Html.Encode(@Html.Raw(answer.SupportingInformationHtml))}})
                     }
+
+
+                    @if (Model.QuestionNo == "TX1039" && answer.Order < 3)
+                    {
+                        <div class="interrupt--mini callout--warning" style="margin-top: 17px;">
+                            This means you’ll be asked to call 999
+                        </div>
+                    }
                 </div>
             }
         </fieldset>
     </div>
-        <button class="button--next" id="nextScreen" type="submit" name="Question" value="Question">Next question</button>
+    <button class="button--next" id="nextScreen" type="submit" name="Question" value="Question">Next question</button>
     if (!Model.IsFirstStep)
     {
         <button class="button--stacked button--previous button--link" id="previousScreen" type="submit" value="PreviousQuestion" name="PreviousQuestion" formnovalidate>Change my previous answer</button>
     }
 }
+
+@if (Model.QuestionNo == "TX1039")
+{
+
+    <style>
+        /* This is for the 999 callout experiment, should be moved to frontend kit or removed */
+        .interrupt--mini {
+            display: none;
+            position: relative;
+            clear: both;
+            margin: 12px 0 20px 0;
+            padding: 8px;
+            border-width: 4px;
+        }
+
+        input:checked ~ .interrupt--mini {
+            display: block;
+        }
+
+        .interrupt--mini:before {
+            content: ' ';
+            position: absolute;
+            left: 4px;
+            top: -16px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 12px 16px 12px;
+            border-color: transparent transparent #fada8b transparent;
+        }
+    </style>
+}
+
+@Html.Partial("_PageLoadingIndicator")
+<script type="text/javascript">
+
+    const formToJSON = elements => [].reduce.call(elements, (data, element) => {
+
+        if (element.type != "radio") data[element.name] = element.value;
+        else if (element.checked) data[element.name] = element.value;
+        return data;
+
+        }, {});
+
+    const form = $('form')[0];
+
+    $(".button--next").on("click",
+        function () {
+
+            var prePopulatedDosResultsOutcomeGroups = [@(Html.Raw(String.Join(",",OutcomeGroup.PrePopulatedDosResultsOutcomeGroups.Select(og => "\"" + og.Id + "\"").ToList())))];
+            $.ajax({
+                    method: "POST",
+                    url: "/question/NextNodeDetails",
+                    data: formToJSON(form.elements)
+                })
+                .done(function(data) {
+                    if (data.NodeType == @((int)NodeType.Outcome) && '@Model.CurrentPostcode' != '' &&
+                        prePopulatedDosResultsOutcomeGroups.indexOf(data.OutcomeGroup.Id) > -1) {
+                        startPageLoadingIndicator('Searching for services near to  @Model.FormattedCurrentPostcode ...');
+                    }
+                });
+        });
+
+
+
+
+
+
+
+</script>
